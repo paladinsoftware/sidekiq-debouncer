@@ -44,3 +44,7 @@ end
 ```
 
 In the application, call `MyWorker.debounce(...)`. Everytime you call this function, `MyWorker`'s execution will be postponed by 5 minutes. After that time `MyWorker` will receive a method call `perform` with an array of arguments that were provided to the `MyWorker.debounce(...)`.
+
+## License
+
+MIT Licensed. See LICENSE.txt for details.
