@@ -5,9 +5,11 @@ class TestWorker
   include Sidekiq::Debounce
 
   sidekiq_options(
-    debounce_for: 5 * 60,
-    debounce_by: -> (job_args) {
-      job_args[0]
+    debounce: {
+      time: 5 * 60,
+      by: -> (job_args) {
+        job_args[0]
+      }
     }
   )
 

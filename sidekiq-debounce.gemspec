@@ -24,5 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec-sidekiq'
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'rspec-redis_helper'
-  gem.add_development_dependency 'fakeredis'
+  gem.add_development_dependency 'redis-namespace'
 end

@@ -14,13 +14,16 @@ module Sidekiq
       DEFAULT_DEBOUNCE_BY = -> (job_args) { 0 }
 
       def debounce(*args)
-        debounce_for = sidekiq_options["debounce_for"] || DEFAULT_DEBOUNCE_FOR
-        debounce_by = sidekiq_options["debounce_by"] || DEFAULT_DEBOUNCE_BY
+        sidekiq_options["debounce"] ||= {}
+
+        debounce_for = sidekiq_options["debounce"]["time"] || DEFAULT_DEBOUNCE_FOR
+        debounce_by = sidekiq_options["debounce"]["by"] || DEFAULT_DEBOUNCE_BY
         debounce_by_value = debounce_by.call(args)
 
         ss = Sidekiq::ScheduledSet.new
         jobs = ss.select do |job|
-          job.klass == self.to_s && debounce_by.call(job.args[0][0]) == debounce_by_value
+          job.klass == self.to_s &&
+          debounce_by.call(job.args[0][0]) == debounce_by_value
         end
 
         time_from_now = Time.now + debounce_for
