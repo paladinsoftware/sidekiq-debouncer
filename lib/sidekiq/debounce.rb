@@ -16,8 +16,8 @@ module Sidekiq
       def debounce(*args)
         sidekiq_options["debounce"] ||= {}
 
-        debounce_for = sidekiq_options["debounce"]["time"] || DEFAULT_DEBOUNCE_FOR
-        debounce_by = sidekiq_options["debounce"]["by"] || DEFAULT_DEBOUNCE_BY
+        debounce_for = sidekiq_options["debounce"][:time] || DEFAULT_DEBOUNCE_FOR
+        debounce_by = sidekiq_options["debounce"][:by] || DEFAULT_DEBOUNCE_BY
         debounce_by_value = debounce_by.call(args)
 
         ss = Sidekiq::ScheduledSet.new
@@ -38,7 +38,7 @@ module Sidekiq
 
         jobs_to_group << args
 
-        TestWorker.perform_in(debounce_for, jobs_to_group)
+        perform_in(debounce_for, jobs_to_group)
       end
     end
   end
