@@ -9,16 +9,12 @@ Worker will postpone its execution after `wait time` have elapsed since the last
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-debounce'
+gem 'sidekiq-debounce', github: 'paladinsoftware/sidekiq-debounce'
 ```
 
 And then execute:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install sidekiq-debounce
 
 ## Basic usage
 
