@@ -21,6 +21,50 @@ class TestWorker
   end
 end
 
+class TestWorkerWithMultipleArguments
+  include Sidekiq::Worker
+  include Sidekiq::Debounce
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      by: -> (job_args) {
+        job_args[0] + job_args[1]
+      }
+    }
+  )
+
+  # group - array of arguments for single job
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+
+class TestWorkerWithSymbolAsDebounce
+  include Sidekiq::Worker
+  include Sidekiq::Debounce
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      by: :debounce_method
+    }
+  )
+
+  def self.debounce_method(*args)
+    args[0]
+  end
+
+  # group - array of arguments for single job
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+
 describe Sidekiq::Debounce do
   let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0) }
 
@@ -41,13 +85,46 @@ describe Sidekiq::Debounce do
         expect(group.args[0]).to eq([["A", "job 1"]])
         expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
       end
+
+      it "executes it after 5 minutes for symbol debounce" do
+        expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).once.and_call_original
+        TestWorkerWithSymbolAsDebounce.debounce("A", "job 1")
+
+        expect(Sidekiq::ScheduledSet.new.size).to eq(1)
+
+        group = Sidekiq::ScheduledSet.new.first
+        expect(group.args[0]).to eq([["A", "job 1"]])
+        expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
+      end
     end
 
     context "1 task, 3 minutes break, 1 task" do
+      it "executes both tasks after 8 minutes for multiple arguments" do
+        TestWorkerWithMultipleArguments.debounce(1, 5)
+        Timecop.freeze(time_start + 3 * 60)
+        TestWorkerWithMultipleArguments.debounce(3, 3)
+
+        expect(Sidekiq::ScheduledSet.new.size).to eq(1)
+        group = Sidekiq::ScheduledSet.new.first
+        expect(group.args[0]).to eq([[1, 5], [3, 3]])
+        expect(group.at.to_i).to be((time_start + 8 * 60).to_i)
+      end
+
       it "executes both tasks after 8 minutes" do
         TestWorker.debounce("A", "job 1")
         Timecop.freeze(time_start + 3 * 60)
         TestWorker.debounce("A", "job 2")
+
+        expect(Sidekiq::ScheduledSet.new.size).to eq(1)
+        group = Sidekiq::ScheduledSet.new.first
+        expect(group.args[0]).to eq([["A", "job 1"], ["A", "job 2"]])
+        expect(group.at.to_i).to be((time_start + 8 * 60).to_i)
+      end
+
+      it "executes both tasks after 8 minutes for symbol debounce" do
+        TestWorkerWithMultipleArguments.debounce("A", "job 1")
+        Timecop.freeze(time_start + 3 * 60)
+        TestWorkerWithMultipleArguments.debounce("A", "job 2")
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(1)
         group = Sidekiq::ScheduledSet.new.first
