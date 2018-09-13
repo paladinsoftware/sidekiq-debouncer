@@ -53,7 +53,7 @@ class TestWorkerWithSymbolAsDebounce
     }
   )
 
-  def self.debounce_method(*args)
+  def self.debounce_method(args)
     args[0]
   end
 
@@ -87,7 +87,7 @@ describe Sidekiq::Debounce do
       end
 
       it "executes it after 5 minutes for symbol debounce" do
-        expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).once.and_call_original
+        expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).with(["A", "job 1"]).once.and_call_original
         TestWorkerWithSymbolAsDebounce.debounce("A", "job 1")
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(1)
@@ -122,9 +122,9 @@ describe Sidekiq::Debounce do
       end
 
       it "executes both tasks after 8 minutes for symbol debounce" do
-        TestWorkerWithMultipleArguments.debounce("A", "job 1")
+        TestWorkerWithSymbolAsDebounce.debounce("A", "job 1")
         Timecop.freeze(time_start + 3 * 60)
-        TestWorkerWithMultipleArguments.debounce("A", "job 2")
+        TestWorkerWithSymbolAsDebounce.debounce("A", "job 2")
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(1)
         group = Sidekiq::ScheduledSet.new.first
