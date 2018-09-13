@@ -39,6 +39,55 @@ class MyWorker
 end
 ```
 
+You can specify your own debounce method. In this case worker will be debounced if first argument matches.
+```ruby
+class MyWorker
+  include Sidekiq::Worker
+  include Sidekiq::Debounce
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      debounce_by: -> (job_args) {
+        job_args[0]
+      }
+    }
+  )
+
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+```
+
+You can also pass symbol as `debounce_by` matching class method.
+```ruby
+class MyWorker
+  include Sidekiq::Worker
+  include Sidekiq::Debounce
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      debounce_by: :debounce_method
+    }
+  )
+  
+  def self.debounce_method(job_args)
+    job_args[0]
+  end
+
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+```
+
+
 In the application, call `MyWorker.debounce(...)`. Everytime you call this function, `MyWorker`'s execution will be postponed by 5 minutes. After that time `MyWorker` will receive a method call `perform` with an array of arguments that were provided to the `MyWorker.debounce(...)`.
 
 ## License
