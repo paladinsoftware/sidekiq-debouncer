@@ -48,7 +48,7 @@ class MyWorker
   sidekiq_options(
     debounce: {
       time: 5 * 60,
-      debounce_by: -> (job_args) {
+      by: -> (job_args) {
         job_args[0]
       }
     }
@@ -71,7 +71,7 @@ class MyWorker
   sidekiq_options(
     debounce: {
       time: 5 * 60,
-      debounce_by: :debounce_method
+      by: :debounce_method
     }
   )
   
