@@ -143,13 +143,13 @@ describe Sidekiq::Debounce do
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(2)
 
-        group_1 = Sidekiq::ScheduledSet.new.to_a[0]
-        expect(group_1.args[0]).to eq([["A", "job 1"], ["A", "job 2"]])
-        expect(group_1.at.to_i).to be((time_start + 8 * 60).to_i)
+        groups = Sidekiq::ScheduledSet.new.to_a.sort_by { |g| g.at.to_i }
 
-        group_2 = Sidekiq::ScheduledSet.new.to_a[1]
-        expect(group_2.args[0]).to eq([["A", "job 3"]])
-        expect(group_2.at.to_i).to be((time_start + 14 * 60).to_i)
+        expect(groups[0].args[0]).to eq([["A", "job 1"], ["A", "job 2"]])
+        expect(groups[0].at.to_i).to be((time_start + 8 * 60).to_i)
+
+        expect(groups[1].args[0]).to eq([["A", "job 3"]])
+        expect(groups[1].at.to_i).to be((time_start + 14 * 60).to_i)
       end
     end
 
@@ -161,13 +161,13 @@ describe Sidekiq::Debounce do
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(2)
 
-        group_1 = Sidekiq::ScheduledSet.new.to_a[0]
-        expect(group_1.args[0]).to eq([["A", "job 1"]])
-        expect(group_1.at.to_i).to be((time_start + 5 * 60).to_i)
+        groups = Sidekiq::ScheduledSet.new.to_a.sort_by { |g| g.at.to_i }
 
-        group_2 = Sidekiq::ScheduledSet.new.to_a[1]
-        expect(group_2.args[0]).to eq([["A", "job 2"]])
-        expect(group_2.at.to_i).to be((time_start + 11 * 60).to_i)
+        expect(groups[0].args[0]).to eq([["A", "job 1"]])
+        expect(groups[0].at.to_i).to be((time_start + 5 * 60).to_i)
+
+        expect(groups[1].args[0]).to eq([["A", "job 2"]])
+        expect(groups[1].at.to_i).to be((time_start + 11 * 60).to_i)
       end
     end
   end
@@ -186,17 +186,16 @@ describe Sidekiq::Debounce do
 
         expect(Sidekiq::ScheduledSet.new.size).to eq(3)
 
-        group_1 = Sidekiq::ScheduledSet.new.to_a[0]
-        expect(group_1.args[0]).to eq([["A", "job 1"], ["A", "job 2"]])
-        expect(group_1.at.to_i).to be((time_start + 8 * 60).to_i)
+        groups = Sidekiq::ScheduledSet.new.to_a.sort_by { |g| g.at.to_i }
 
-        group_2 = Sidekiq::ScheduledSet.new.to_a[1]
-        expect(group_2.args[0]).to eq([["B", "job 3"], ["B", "job 4"]])
-        expect(group_2.at.to_i).to be((time_start + 11 * 60).to_i)
+        expect(groups[0].args[0]).to eq([["A", "job 1"], ["A", "job 2"]])
+        expect(groups[0].at.to_i).to be((time_start + 8 * 60).to_i)
 
-        group_3 = Sidekiq::ScheduledSet.new.to_a[2]
-        expect(group_3.args[0]).to eq([["B", "job 5"]])
-        expect(group_3.at.to_i).to be((time_start + 17 * 60).to_i)
+        expect(groups[1].args[0]).to eq([["B", "job 3"], ["B", "job 4"]])
+        expect(groups[1].at.to_i).to be((time_start + 11 * 60).to_i)
+
+        expect(groups[2].args[0]).to eq([["B", "job 5"]])
+        expect(groups[2].at.to_i).to be((time_start + 17 * 60).to_i)
       end
     end
   end
