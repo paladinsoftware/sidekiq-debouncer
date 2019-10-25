@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 gem "sidekiq", "= 5.2.7"
 
-gemspec
+gemspec path: '../'
