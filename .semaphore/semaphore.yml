@@ -1,5 +1,5 @@
 version: v1.0
-name: Sidekiq-debounce CI pipeline
+name: Sidekiq-debouncer CI pipeline
 agent:
   machine:
     type: e1-standard-2

@@ -5,7 +5,7 @@ require 'sidekiq/debouncer/version'
 
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-debouncer'
-  gem.version       = Sidekiq::Debounce::VERSION
+  gem.version       = Sidekiq::Debouncer::VERSION
   gem.authors       = ['Sebastian Zuchmański']
   gem.email         = ['sebcioz@gmail.com']
   gem.description   = %q{}
