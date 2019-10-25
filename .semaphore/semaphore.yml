@@ -16,6 +16,7 @@ blocks:
         - name: Run RSpec
           commands:
             - checkout
+            - sem-service start redis
             - sem-version ruby 2.5.3
             - bundle install
             - RAILS_ENV=test bundle exec rspec
