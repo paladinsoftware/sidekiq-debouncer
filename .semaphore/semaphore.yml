@@ -22,5 +22,6 @@ blocks:
             - export RUBY_VERSION=$(cat gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile | grep "ruby \".*\"" | grep -o "[0-9]\.[0-9]\.[0-9]")
             - sem-version ruby $RUBY_VERSION
             - sem-service start redis
+            - gem install bundler -v 1.17.3 -N
             - bundle install --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile
             - RAILS_ENV=test bundle exec --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile rspec

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "2.4.8"
+ruby "2.4.7"
 
 gem "sidekiq", "= 5.1.3"
 
