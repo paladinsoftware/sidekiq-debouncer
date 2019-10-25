@@ -6,13 +6,13 @@ require 'redis/namespace'
 require 'rspec-sidekiq'
 require 'timecop'
 
-require 'sidekiq/debounce'
+require 'sidekiq/debouncer'
 
 RSpec.configure do |config|
   config.order = 'random'
   config.color = true
 
   Sidekiq.configure_server do |config|
-    config.redis[:namespace] = { namespace: 'sidekiq-debounce' }
+    config.redis[:namespace] = { namespace: 'sidekiq-debouncer' }
   end
 end

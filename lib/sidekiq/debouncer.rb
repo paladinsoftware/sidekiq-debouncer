@@ -1,10 +1,10 @@
 require 'sidekiq'
 require 'sidekiq/api'
 
-require 'sidekiq/debounce/version'
+require 'sidekiq/debouncer/version'
 
 module Sidekiq
-  module Debounce
+  module Debouncer
     def self.included(base)
       base.extend ClassMethods
     end

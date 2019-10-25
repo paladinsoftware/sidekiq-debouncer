@@ -1,4 +1,4 @@
-# Sidekiq::Debounce
+# Sidekiq::Debouncer
 
 Sidekiq extension that adds the ability to debounce job execution.
 
@@ -9,7 +9,7 @@ Worker will postpone its execution after `wait time` have elapsed since the last
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-debounce', github: 'paladinsoftware/sidekiq-debounce'
+gem 'sidekiq-debouncer', github: 'paladinsoftware/sidekiq-debouncer'
 ```
 
 And then execute:
@@ -18,12 +18,12 @@ And then execute:
 
 ## Basic usage
 
-In a worker, include `Sidekiq::Debounce` module, specify debounce wait time (in seconds):
+In a worker, include `Sidekiq::Debouncer` module, specify debounce wait time (in seconds):
 
 ```ruby
 class MyWorker
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {
@@ -43,7 +43,7 @@ You can specify your own debounce method. In this case worker will be debounced 
 ```ruby
 class MyWorker
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {
@@ -66,7 +66,7 @@ You can also pass symbol as `debounce_by` matching class method.
 ```ruby
 class MyWorker
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {

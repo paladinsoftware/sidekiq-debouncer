@@ -2,7 +2,7 @@ require 'spec_helper'
 
 class TestWorker
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {
@@ -23,7 +23,7 @@ end
 
 class TestWorkerWithMultipleArguments
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {
@@ -44,7 +44,7 @@ end
 
 class TestWorkerWithSymbolAsDebounce
   include Sidekiq::Worker
-  include Sidekiq::Debounce
+  include Sidekiq::Debouncer
 
   sidekiq_options(
     debounce: {
@@ -65,7 +65,7 @@ class TestWorkerWithSymbolAsDebounce
   end
 end
 
-describe Sidekiq::Debounce do
+describe Sidekiq::Debouncer do
   let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0) }
 
   before do

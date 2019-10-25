@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'sidekiq/debounce/version'
+require 'sidekiq/debouncer/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = 'sidekiq-debounce'
-  gem.version       = Sidekiq::Debounce::VERSION
+  gem.name          = 'sidekiq-debouncer'
+  gem.version       = Sidekiq::Debouncer::VERSION
   gem.authors       = ['Sebastian Zuchmański']
   gem.email         = ['sebcioz@gmail.com']
   gem.description   = %q{}
   gem.summary       = %q{}
-  gem.homepage      = 'https://github.com/paladinsoftware/sidekiq-debounce'
+  gem.homepage      = 'https://github.com/paladinsoftware/sidekiq-debouncer'
   gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($/)
