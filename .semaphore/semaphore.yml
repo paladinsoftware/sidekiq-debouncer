@@ -15,13 +15,10 @@ blocks:
       jobs:
         - name: Run RSpec
           matrix:
-            - env_var: RUBY_VERSION
-              values: [ "2.3", "2.4", "2.5", "2.6" ]
             - env_var: SIDEKIQ_VERSION
               values: [ "5.0.5", "5.1.3", "5.2.7", "6.0.2" ]
           commands:
             - checkout
             - sem-service start redis
-            - sem-version ruby $RUBY_VERSION
             - bundle install --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile
             - RAILS_ENV=test bundle exec --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile rspec
