@@ -9,7 +9,7 @@ Worker will postpone its execution after `wait time` have elapsed since the last
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-debouncer', github: 'paladinsoftware/sidekiq-debouncer'
+gem 'sidekiq-debouncer'
 ```
 
 And then execute:

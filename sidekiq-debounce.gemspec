@@ -6,9 +6,9 @@ require 'sidekiq/debouncer/version'
 Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-debouncer'
   gem.version       = Sidekiq::Debouncer::VERSION
-  gem.authors       = ['Sebastian Zuchmański']
-  gem.email         = ['sebcioz@gmail.com']
-  gem.description   = %q{}
+  gem.authors       = ['Sebastian Zuchmański', 'Karol Bąk']
+  gem.email         = ['sebcioz@gmail.com', 'karol.bak@paladinsoftware.com']
+  gem.description   = %q{Sidekiq extension that adds the ability to debounce job execution.}
   gem.summary       = %q{}
   gem.homepage      = 'https://github.com/paladinsoftware/sidekiq-debouncer'
   gem.license       = 'MIT'
