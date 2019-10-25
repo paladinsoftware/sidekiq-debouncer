@@ -22,7 +22,7 @@ module Sidekiq
 
         jobs = jobs(debounce_by, debounce_by_value)
 
-        debounce_job(jobs, debounce_for)
+        debounce_job(jobs, debounce_for, args)
       end
 
       private
@@ -36,7 +36,7 @@ module Sidekiq
         end
       end
 
-      def debounce_job(jobs, debounce_for)
+      def debounce_job(jobs, debounce_for, args)
         time_from_now = Time.now + debounce_for
         jobs_to_group = []
 
