@@ -1,4 +1,6 @@
 # Sidekiq::Debouncer
+[![Maintainability](https://api.codeclimate.com/v1/badges/a4b87d864a8a0f69d2be/maintainability)](https://codeclimate.com/github/paladinsoftware/sidekiq-debouncer/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a4b87d864a8a0f69d2be/test_coverage)](https://codeclimate.com/github/paladinsoftware/sidekiq-debouncer/test_coverage)
 
 Sidekiq extension that adds the ability to debounce job execution.
 

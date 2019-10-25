@@ -25,4 +25,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'rspec-redis_helper'
   gem.add_development_dependency 'redis-namespace'
+  gem.add_development_dependency 'simplecov'
 end
