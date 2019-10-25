@@ -22,19 +22,7 @@ module Sidekiq
 
         jobs = jobs(debounce_by, debounce_by_value)
 
-        time_from_now = Time.now + debounce_for
-        jobs_to_group = []
-
-        jobs.each do |job|
-          if job.at > Time.now && job.at < time_from_now
-            jobs_to_group += job.args[0]
-            job.delete
-          end
-        end
-
-        jobs_to_group << args
-
-        perform_in(debounce_for, jobs_to_group)
+        debounce_job(jobs, debounce_for)
       end
 
       private
@@ -48,6 +36,22 @@ module Sidekiq
 
           debounce_by_value_job == debounce_by_value
         end
+      end
+
+      def debounce_job(jobs, debounce_for)
+        time_from_now = Time.now + debounce_for
+        jobs_to_group = []
+
+        jobs.each do |job|
+          if job.at > Time.now && job.at < time_from_now
+            jobs_to_group += job.args[0]
+            job.delete
+          end
+        end
+
+        jobs_to_group << args
+
+        perform_in(debounce_for, jobs_to_group)
       end
     end
   end
