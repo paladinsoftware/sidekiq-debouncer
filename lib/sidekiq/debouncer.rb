@@ -29,9 +29,7 @@ module Sidekiq
 
       def jobs(debounce_by, debounce_by_value)
         ss = Sidekiq::ScheduledSet.new
-        ss.select do |job|
-          next false unless job.klass == self.to_s
-
+        ss.select { |job| job.klass == self.to_s }.select do |job|
           debounce_by_value_job = debounce_by.is_a?(Symbol) ? send(debounce_by, job.args[0][0]) : debounce_by.call(job.args[0][0])
 
           debounce_by_value_job == debounce_by_value
