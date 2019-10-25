@@ -1,0 +1,21 @@
+version: v1.0
+name: Sidekiq-debounce CI pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: Run specs
+    task:
+      env_vars:
+        - name: RAILS_ENV
+          value: "test"
+
+      jobs:
+        - name: Run RSpec
+          commands:
+            - checkout
+            - sem-version ruby 2.5.3
+            - bundle install
+            - RAILS_ENV=test bundle exec rspec
