@@ -16,7 +16,7 @@ blocks:
         - name: Run RSpec
           matrix:
             - env_var: RUBY_VERSION
-              values: [ "2.2", "2.3", "2.4", "2.5", "2.6", "2.7" ]
+              values: [ "2.2.10", "2.3", "2.4", "2.5", "2.6", "2.7.0-preview1" ]
           commands:
             - checkout
             - sem-service start redis
