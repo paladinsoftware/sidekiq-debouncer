@@ -21,7 +21,8 @@ blocks:
               values: [ "5.0.5", "5.1.3", "5.2.7", "6.0.2" ]
           commands:
             - checkout
-            - gem install bundler
+            - gem uninstall bundler -aI
+            - gem install bundler -v 2.0.2 -N
             - sem-service start redis
             - sem-version ruby $RUBY_VERSION
             - bundle install --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile
