@@ -1,3 +1,5 @@
+test
+
 # Sidekiq::Debouncer
 
 Sidekiq extension that adds the ability to debounce job execution.
