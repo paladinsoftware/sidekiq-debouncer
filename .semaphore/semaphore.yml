@@ -14,9 +14,12 @@ blocks:
 
       jobs:
         - name: Run RSpec
+          matrix:
+            - env_var: RUBY_VERSION
+              values: [ "2.2", "2.3", "2.4", "2.5", "2.6", "2.7" ]
           commands:
             - checkout
             - sem-service start redis
-            - sem-version ruby 2.5.3
+            - sem-version ruby $RUBY_VERSION
             - bundle install
             - RAILS_ENV=test bundle exec rspec
