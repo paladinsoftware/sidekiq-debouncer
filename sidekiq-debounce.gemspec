@@ -17,12 +17,11 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = %w(lib)
 
-  gem.add_dependency 'activesupport'
   gem.add_dependency 'sidekiq', '>= 5.0'
 
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'rspec-sidekiq'
-  gem.add_development_dependency 'timecop'
-  gem.add_development_dependency 'rspec-redis_helper'
-  gem.add_development_dependency 'redis-namespace'
+  gem.add_development_dependency 'rspec', '~> 3.9.0'
+  gem.add_development_dependency 'rspec-sidekiq', '~> 3.0.3'
+  gem.add_development_dependency 'timecop', '~> 0.9.1'
+  gem.add_development_dependency 'rspec-redis_helper', '~> 0.1.2'
+  gem.add_development_dependency 'redis-namespace', '~> 1.6.0'
 end
