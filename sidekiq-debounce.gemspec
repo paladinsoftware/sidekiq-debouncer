@@ -12,6 +12,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{}
   gem.homepage      = 'https://github.com/paladinsoftware/sidekiq-debouncer'
   gem.license       = 'MIT'
+  gem.required_ruby_version = '>= 2.3.0'
 
   gem.files         = `git ls-files`.split($/)
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
