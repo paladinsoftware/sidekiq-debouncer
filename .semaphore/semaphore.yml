@@ -8,6 +8,9 @@ agent:
 blocks:
   - name: Run specs
     task:
+      secrets:
+        - name: sidekiq-debouncer
+
       env_vars:
         - name: RAILS_ENV
           value: "test"
@@ -24,4 +27,8 @@ blocks:
             - sem-service start redis
             - gem install bundler -v 1.17.3 -N
             - bundle install --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile
+            - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            - chmod +x ./cc-test-reporter
+            - ./cc-test-reporter before-build
             - RAILS_ENV=test bundle exec --gemfile gemfiles/sidekiq-$SIDEKIQ_VERSION.gemfile rspec
+            - ./cc-test-reporter after-build

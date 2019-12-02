@@ -20,15 +20,23 @@ module Sidekiq
         debounce_by = sidekiq_options["debounce"][:by] || DEFAULT_DEBOUNCE_BY
         debounce_by_value = debounce_by.is_a?(Symbol) ? send(debounce_by, args) : debounce_by.call(args)
 
-        ss = Sidekiq::ScheduledSet.new
-        jobs = ss.select do |job|
-          next false unless job.klass == self.to_s
+        jobs = jobs_to_debounce(debounce_by, debounce_by_value)
 
+        debounce_job(jobs, debounce_for, args)
+      end
+
+      private
+
+      def jobs_to_debounce(debounce_by, debounce_by_value)
+        ss = Sidekiq::ScheduledSet.new
+        ss.select { |job| job.klass == self.to_s }.select do |job|
           debounce_by_value_job = debounce_by.is_a?(Symbol) ? send(debounce_by, job.args[0][0]) : debounce_by.call(job.args[0][0])
 
           debounce_by_value_job == debounce_by_value
         end
+      end
 
+      def debounce_job(jobs, debounce_for, args)
         time_from_now = Time.now + debounce_for
         jobs_to_group = []
 

@@ -6,6 +6,9 @@ require 'redis/namespace'
 require 'rspec-sidekiq'
 require 'timecop'
 
+require 'simplecov'
+SimpleCov.start
+
 require 'sidekiq/debouncer'
 
 RSpec.configure do |config|
