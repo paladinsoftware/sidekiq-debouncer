@@ -93,3 +93,7 @@ In the application, call `MyWorker.debounce(...)`. Everytime you call this funct
 ## License
 
 MIT Licensed. See LICENSE.txt for details.
+
+## Notes
+
+This gem was renamed from `sidekiq-debouce` due to name conflict on rubygems.
