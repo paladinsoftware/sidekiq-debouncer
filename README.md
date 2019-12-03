@@ -92,6 +92,14 @@ end
 
 In the application, call `MyWorker.debounce(...)`. Everytime you call this function, `MyWorker`'s execution will be postponed by 5 minutes. After that time `MyWorker` will receive a method call `perform` with an array of arguments that were provided to the `MyWorker.debounce(...)`.
 
+## Testing
+
+From https://github.com/mperham/sidekiq/wiki/Testing#api:
+
+> Sidekiq's API does not have a testing mode, e.g. something like Sidekiq::ScheduledSet.new.each(...) will always hit Redis. You can use Sidekiq::Testing.disable! to set up jobs in order to use the API in your tests against a real Redis instance.
+
+In order to test the behavior of `sidekiq-debouncer` it is necessary to disable testing mode. It is the limitation of internal implementation and Sidekiq API.
+
 ## License
 
 MIT Licensed. See LICENSE.txt for details.
