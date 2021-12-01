@@ -1,0 +1,32 @@
+name: Sidekiq-debouncer CI pipeline
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+    strategy:
+      fail-fast: false
+      matrix:
+        sidekiq: [ "5.0.5", "5.1.3", "5.2.7", "6.0.2" ]
+    env:
+      RAILS_ENV: test
+      SIDEKIQ_VERSION: ${{ matrix.sidekiq }}
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/sidekiq-${{ matrix.sidekiq }}.gemfile
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        version=$(cat gemfiles/sidekiq-${{ matrix.sidekiq }}.gemfile | grep "ruby \".*\"" | grep -o "[0-9]\.[0-9]\.[0-9]")
+        echo "RUBY_VERSION=$version" >> $GITHUB_ENV
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ env.RUBY_VERSION }}
+        bundler-cache: true
+    - run: bundle exec rspec
