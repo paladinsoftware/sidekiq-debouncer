@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+ruby "3.1.2"
+
+gem "sidekiq", "= 7.0.0"
+
+gemspec path: '../'
