@@ -71,7 +71,6 @@ describe Sidekiq::Debouncer do
   before do
     Timecop.freeze(time_start)
     Sidekiq::ScheduledSet.new.clear
-    Sidekiq::Testing.disable!
   end
 
   context "1 type of tasks" do

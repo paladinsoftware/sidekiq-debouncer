@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'sidekiq-debouncer'
   gem.version       = Sidekiq::Debouncer::VERSION
   gem.authors       = ['Sebastian Zuchmański', 'Karol Bąk']
-  gem.email         = ['sebcioz@gmail.com', 'karol.bak@paladinsoftware.com']
+  gem.email         = ['sebcioz@gmail.com', 'kukicola@gmail.com']
   gem.description   = %q{Sidekiq extension that adds the ability to debounce job execution.}
   gem.summary       = %q{}
   gem.homepage      = 'https://github.com/paladinsoftware/sidekiq-debouncer'
@@ -21,9 +21,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'sidekiq', '>= 5.0', '< 8.0'
 
   gem.add_development_dependency 'rspec', '~> 3.9.0'
-  gem.add_development_dependency 'rspec-sidekiq', '~> 3.0.3'
   gem.add_development_dependency 'timecop', '~> 0.9.1'
-  gem.add_development_dependency 'rspec-redis_helper', '~> 0.1.2'
-  gem.add_development_dependency 'redis-namespace', '~> 1.6.0'
   gem.add_development_dependency 'simplecov', '~> 0.16.1'
 end
