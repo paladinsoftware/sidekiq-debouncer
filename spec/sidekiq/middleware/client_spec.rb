@@ -1,31 +1,12 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require_relative "../../support/context"
 require_relative "../../support/test_workers"
 require_relative "../../support/test_middlewares"
 
 describe Sidekiq::Debouncer::Middleware::Client do
-  let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0) }
-  let(:sidekiq_config) do
-    sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
-    if sidekiq_version >= Gem::Version.new('7.0')
-      Sidekiq.default_configuration
-    else
-      Sidekiq.queues = ["default"]
-      Sidekiq
-    end
-  end
-  let(:puller) { ::Sidekiq::Scheduled::Poller.new(sidekiq_config) }
-  let(:schedule_set) { Sidekiq::ScheduledSet.new }
-  let(:queue) { Sidekiq::Queue.new("default") }
-
-  before do
-    Timecop.freeze(time_start)
-    Sidekiq.redis do |connection|
-      connection.call("FLUSHDB")
-      connection.call("SCRIPT", "FLUSH")
-    end
-  end
+  include_context "sidekiq"
 
   context "task with debounce" do
     context "1 task" do

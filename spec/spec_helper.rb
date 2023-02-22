@@ -18,7 +18,7 @@ end
 require "sidekiq-debouncer"
 
 sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
-if sidekiq_version >= Gem::Version.new('7.0')
+if sidekiq_version >= Gem::Version.new("7.0")
   Sidekiq.default_configuration.logger.level = Logger::UNKNOWN
 else
   Sidekiq.logger.level = Logger::UNKNOWN
