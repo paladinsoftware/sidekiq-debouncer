@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby "2.7.5"
-
-gem "sidekiq", "= 6.2.2"
+gem "sidekiq", "= 6.5.8"
 
 gemspec path: '../'

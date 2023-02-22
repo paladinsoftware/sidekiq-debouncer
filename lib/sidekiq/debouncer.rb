@@ -1,7 +1,9 @@
-require 'sidekiq'
-require 'sidekiq/api'
+# frozen_string_literal: true
 
-require 'sidekiq/debouncer/version'
+require_relative "debouncer/version"
+require_relative "debouncer/errors"
+require_relative "debouncer/middleware/client"
+require_relative "debouncer/middleware/server"
 
 module Sidekiq
   module Debouncer
@@ -10,46 +12,9 @@ module Sidekiq
     end
 
     module ClassMethods
-      DEFAULT_DEBOUNCE_FOR = 5 * 60 # 5.minutes
-      DEFAULT_DEBOUNCE_BY = -> (job_args) { 0 }
-
-      def debounce(*args)
-        sidekiq_options["debounce"] ||= {}
-
-        debounce_for = sidekiq_options["debounce"][:time] || DEFAULT_DEBOUNCE_FOR
-        debounce_by = sidekiq_options["debounce"][:by] || DEFAULT_DEBOUNCE_BY
-        debounce_by_value = debounce_by.is_a?(Symbol) ? send(debounce_by, args) : debounce_by.call(args)
-
-        jobs = jobs_to_debounce(debounce_by, debounce_by_value)
-
-        debounce_job(jobs, debounce_for, args)
-      end
-
-      private
-
-      def jobs_to_debounce(debounce_by, debounce_by_value)
-        ss = Sidekiq::ScheduledSet.new
-        ss.select { |job| job.klass == self.to_s }.select do |job|
-          debounce_by_value_job = debounce_by.is_a?(Symbol) ? send(debounce_by, job.args[0][0]) : debounce_by.call(job.args[0][0])
-
-          debounce_by_value_job == debounce_by_value
-        end
-      end
-
-      def debounce_job(jobs, debounce_for, args)
-        time_from_now = Time.now + debounce_for
-        jobs_to_group = []
-
-        jobs.each do |job|
-          if job.at > Time.now && job.at < time_from_now
-            jobs_to_group += job.args[0]
-            job.delete
-          end
-        end
-
-        jobs_to_group << args
-
-        perform_in(debounce_for, jobs_to_group)
+      def debounce(...)
+        warn "WARNING: debounce method is deprecated, use perform_async instead"
+        perform_async(...)
       end
     end
   end
