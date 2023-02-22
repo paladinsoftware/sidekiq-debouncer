@@ -9,4 +9,4 @@ Breaking changes:
 - Including `Sidekiq::Debouncer` in the workers and using `debounce` method is now deprecated. Use `perform_async` instead.
 - Setup requires middlewares to be added in sidekiq configuration.
 - `by` attribute is now required
-- dropped support for Ruby < 3.x and Sidekiq < 6.5
+- dropped support for Ruby < 2.7 and Sidekiq < 6.5

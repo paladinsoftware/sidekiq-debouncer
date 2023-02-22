@@ -5,6 +5,10 @@ require "digest/sha1"
 module Sidekiq
   module Debouncer
     module Middleware
+      # Middleware used to debounce jobs. If a job has a debounce option it skips normal sidekiq flow and debounces
+      # job using lua script (thanks to that it's process safe). Script merges new job with existing one and creates
+      # debounce key in redis with a reference to the job placed in schedule set. Reference is used to remove existing
+      # job from schedule set when another debounce occurs.
       class Client
         include Sidekiq::ClientMiddleware
 

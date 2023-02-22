@@ -2,7 +2,9 @@
 
 Sidekiq extension that adds the ability to debounce job execution.
 
-Worker will postpone its execution after `wait time` have elapsed since the last time it was invoked. Useful for implementing behavior that should only happen after the input has stopped arriving. For example: sending group email to the user after he stopped interacting with the application.
+Worker will postpone its execution after `wait time` have elapsed since the last time it was invoked. 
+Useful for implementing behavior that should only happen after the input has stopped arriving. 
+For example: sending one email with multiple notifications.
 
 ## Installation
 

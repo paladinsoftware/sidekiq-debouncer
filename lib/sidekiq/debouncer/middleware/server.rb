@@ -3,6 +3,7 @@
 module Sidekiq
   module Debouncer
     module Middleware
+      # Server middleware removes debounce key from redis before executing the job
       class Server
         include Sidekiq::ServerMiddleware
 
