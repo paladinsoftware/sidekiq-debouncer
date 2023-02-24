@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "debouncer/version"
-require_relative "debouncer/errors"
-require_relative "debouncer/middleware/client"
-require_relative "debouncer/middleware/server"
+require "sidekiq/debouncer/version"
+require "sidekiq/debouncer/errors"
+require "sidekiq/debouncer/middleware/client"
+require "sidekiq/debouncer/middleware/server"
 
 module Sidekiq
   module Debouncer
