@@ -30,6 +30,10 @@ Sidekiq.configure_client do |config|
 end
 
 Sidekiq.configure_server do |config|
+  config.client_middleware do |chain|
+    chain.add Sidekiq::Debouncer::Middleware::Client
+  end
+  
   config.server_middleware do |chain|
     chain.add Sidekiq::Debouncer::Middleware::Server
   end
