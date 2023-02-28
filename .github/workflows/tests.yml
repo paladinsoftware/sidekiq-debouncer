@@ -14,16 +14,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sidekiq: [ "5.0.5", "5.1.3", "5.2.7", "6.0.2", "6.2.2", "6.3.1", "7.0.0" ]
+        sidekiq: [ "6.5.8", "7.0.6" ]
+        ruby: [ "2.7.7", "3.0.5", "3.1.3", "3.2.1" ]
     env:
       RAILS_ENV: test
       SIDEKIQ_VERSION: ${{ matrix.sidekiq }}
-      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/sidekiq-${{ matrix.sidekiq }}.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/.github/gemfiles/sidekiq-${{ matrix.sidekiq }}.gemfile
+      RUBY_VERSION: ${{ matrix.ruby }}
     steps:
     - uses: actions/checkout@v2
-    - run: |
-        version=$(cat gemfiles/sidekiq-${{ matrix.sidekiq }}.gemfile | grep "ruby \".*\"" | grep -o "[0-9]\.[0-9]\.[0-9]")
-        echo "RUBY_VERSION=$version" >> $GITHUB_ENV
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
