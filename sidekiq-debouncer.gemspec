@@ -23,7 +23,7 @@ Gem::Specification.new do |gem|
     "CHANGELOG.md",
     "LICENSE.txt",
     "README.md",
-    "sidekiq-debounce.gemspec"
+    "sidekiq-debouncer.gemspec"
   ]
 
   gem.add_dependency "sidekiq", ">= 6.5", "< 8.0"
