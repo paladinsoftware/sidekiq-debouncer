@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.0.0] - 2023-02-28
 Complete rewrite of the library:  
 - Instead of iterating through whole schedule set, sidekiq-debouncer will now cache debounce key in redis with a reference to the job.
 Thanks to that there is a huge performance boost compared to V1. With 1k jobs in schedule set it's over 100x faster.
