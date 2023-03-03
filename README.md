@@ -88,8 +88,8 @@ Keep in mind that the result of the debounce method will be converted to string,
 
 In the application, call `MyWorker.perform_async(...)` as usual. Everytime you call this function, `MyWorker`'s execution will be postponed by 5 minutes. After that time `MyWorker` will receive a method call `perform` with an array of arguments that were provided to the `MyWorker.perform_async(...)` calls.
 
-To avoid keeping leftover keys in redis (for example, when job was manually removed from schedule set), all additional keys are created with TTL.
-It's 7 days by default and should be ok in most of the cases. If you are debouncing your jobs in higher interval than that, you can overwrite this setting:
+To avoid keeping leftover keys in redis, all additional keys are created with TTL.
+It's 24 hours by default and should be ok in most of the cases. If you are debouncing your jobs in higher interval than that, you can overwrite this setting:
 
 ```ruby
 Sidekiq.configure_client do |config|
