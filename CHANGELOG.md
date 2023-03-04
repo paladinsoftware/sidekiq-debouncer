@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.0.1] - 2023-03-04
 - don't remove debounce key in redis to avoid invalid debouncing
 
 ## [2.0.0] - 2023-02-28
