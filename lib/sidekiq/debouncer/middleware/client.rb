@@ -17,7 +17,7 @@ module Sidekiq
         REDIS_ERROR_CLASS = defined?(RedisClient::CommandError) ? RedisClient::CommandError : Redis::CommandError
 
         def initialize(options = {})
-          @debounce_key_ttl = options.fetch(:ttl, 60 * 60 * 24 * 7) # 7 days by default
+          @debounce_key_ttl = options.fetch(:ttl, 60 * 60 * 24) # 24 hours by default
         end
 
         def call(worker_class, job, _queue, _redis_pool)

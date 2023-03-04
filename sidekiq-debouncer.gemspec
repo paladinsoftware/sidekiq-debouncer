@@ -12,6 +12,7 @@ Gem::Specification.new do |gem|
   gem.email = ["sebcioz@gmail.com", "kukicola@gmail.com"]
   gem.summary = "Sidekiq extension that adds the ability to debounce job execution"
   gem.description = <<~DESCRIPTION
+    Sidekiq extension that adds the ability to debounce job execution.
     Worker will postpone its execution after `wait time` have elapsed since the last time it was invoked.
     Useful for implementing behavior that should only happen after the input has stopped arriving.
   DESCRIPTION

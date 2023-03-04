@@ -1,3 +1,6 @@
+## [Unreleased]
+- don't remove debounce key in redis to avoid invalid debouncing
+
 ## [2.0.0] - 2023-02-28
 Complete rewrite of the library:  
 - Instead of iterating through whole schedule set, sidekiq-debouncer will now cache debounce key in redis with a reference to the job.

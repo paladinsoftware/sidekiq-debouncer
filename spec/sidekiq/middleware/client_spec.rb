@@ -106,7 +106,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
       end
     end
 
-    context "1 task, 3 minutes break, 1 task, 6 minutes break, 1 task" do
+    context "1 task, 3 minutes break, 1 task, 6 minutes break, 2 tasks" do
       it "executes two tasks after 8 minutes, the last one in 14 minutes" do
         TestWorker.perform_async("A", "job 1")
 
@@ -120,10 +120,14 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         queue_job = queue.first
-        scheduled = schedule_set.first
-
         expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"]])
-        expect(scheduled.args).to eq([["A", "job 3"]])
+
+        processor.process_one
+        TestWorker.perform_async("A", "job 4")
+        expect(schedule_set.size).to eq(1)
+
+        scheduled = schedule_set.first
+        expect(scheduled.args).to eq([["A", "job 3"], ["A", "job 4"]])
         expect(scheduled.at.to_i).to be((time_start + 14 * 60).to_i)
       end
     end
