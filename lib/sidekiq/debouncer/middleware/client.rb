@@ -28,9 +28,6 @@ module Sidekiq
           return job if !klass.get_sidekiq_options["debounce"] || job["debounce_key"]
 
           debounce(klass, job)
-
-          # prevent normal sidekiq flow
-          false
         end
 
         private
@@ -46,9 +43,14 @@ module Sidekiq
           job["args"] = [job["args"]]
           job.delete("debounce")
 
+          return job if testing?
+
           redis do |connection|
             redis_debounce(connection, keys: ["schedule", key], argv: [Sidekiq.dump_json(job), time, @debounce_key_ttl])
           end
+
+          # prevent normal sidekiq flow
+          false
         end
 
         def debounce_key(klass, job, options)
@@ -78,6 +80,10 @@ module Sidekiq
             retryable = false
             retry
           end
+        end
+
+        def testing?
+          defined?(Sidekiq::Testing) && Sidekiq::Testing.enabled?
         end
       end
     end

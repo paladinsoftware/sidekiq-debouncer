@@ -22,6 +22,12 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(queue.size).to eq(0)
       end
 
+      it "doesnt land in queue" do
+        TestWorker.perform_async("A", "job 1")
+
+        expect(queue.size).to eq(0)
+      end
+
       it "executes it after 5 minutes for symbol debounce" do
         expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).with(["A", "job 1"]).once.and_call_original
         TestWorkerWithSymbolAsDebounce.perform_async("A", "job 1")
@@ -169,15 +175,6 @@ describe Sidekiq::Debouncer::Middleware::Client do
       end
     end
 
-    context "normal job" do
-      it "ignores debounce logic" do
-        NormalWorker.perform_async("abc")
-
-        expect(schedule_set.size).to eq(0)
-        expect(queue.first["debounce_key"]).to be_nil
-      end
-    end
-
     context "debounce method" do
       it "works like perform_async" do
         TestWorker.debounce("A", "job 1")
@@ -205,6 +202,42 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(group.args.map(&:last)).to match_array((1..1000).to_a)
         expect(queue.size).to eq(0)
       end
+    end
+
+    context "sidekiq testing fake mode" do
+      it "uses standard sidekiq flow" do
+        Sidekiq::Testing.fake! do
+          TestWorker.debounce("A", "job 1")
+
+          expect(schedule_set.size).to eq(0)
+          expect(TestWorker.jobs.size).to eq(1)
+
+          expect_any_instance_of(TestWorker).to receive(:perform).with([["A", "job 1"]])
+          TestWorker.drain
+        end
+      end
+    end
+
+    context "sidekiq testing inline mode" do
+      it "uses standard sidekiq flow" do
+        Sidekiq::Testing.inline! do
+          expect_any_instance_of(TestWorker).to receive(:perform).with([["A", "job 1"]])
+
+          TestWorker.debounce("A", "job 1")
+
+          expect(schedule_set.size).to eq(0)
+          expect(TestWorker.jobs.size).to eq(0)
+        end
+      end
+    end
+  end
+
+  context "normal job" do
+    it "ignores debounce logic" do
+      NormalWorker.perform_async("abc")
+
+      expect(schedule_set.size).to eq(0)
+      expect(queue.first["debounce_key"]).to be_nil
     end
   end
 end
