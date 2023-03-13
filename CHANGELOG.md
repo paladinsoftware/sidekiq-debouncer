@@ -1,3 +1,6 @@
+## Unreleased
+- support Sidekiq::Testing
+
 ## [2.0.1] - 2023-03-04
 - don't remove debounce key in redis to avoid invalid debouncing
 
