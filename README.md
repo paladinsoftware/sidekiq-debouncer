@@ -103,6 +103,15 @@ end
 
 In order to test the behavior of `sidekiq-debouncer` it is necessary to disable testing mode. It is the limitation of internal implementation.
 
+Sidekiq::Debouncer will not debounce the jobs in testing mode, instead they'll be executed like normal jobs (pushed to fake queue or executed inline depending on settings).
+Server middleware needs to be added to `Sidekiq::Testing` chain:
+
+```ruby 
+Sidekiq::Testing.server_middleware do |chain|
+  chain.add Sidekiq::Debouncer::Middleware::Server
+end
+```
+
 ## License
 
 MIT Licensed. See LICENSE.txt for details.
