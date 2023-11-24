@@ -70,3 +70,37 @@ class InvalidWorker
   def perform(group)
   end
 end
+
+class TestWorkerWithMaxTime
+  include Sidekiq::Worker
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      max_time: 10 * 60,
+      by: ->(job_args) {
+        job_args[0]
+      }
+    }
+  )
+
+  def perform(group)
+  end
+end
+
+class TestWorkerWithMax
+  include Sidekiq::Worker
+
+  sidekiq_options(
+    debounce: {
+      time: 5 * 60,
+      max: 3,
+      by: ->(job_args) {
+        job_args[0]
+      }
+    }
+  )
+
+  def perform(group)
+  end
+end

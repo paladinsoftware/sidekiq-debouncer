@@ -99,6 +99,56 @@ Sidekiq.configure_client do |config|
 end
 ```
 
+## Additional options
+### `max` - maximum number of jobs to debounce
+By default, all jobs are debounced. If you want to limit the number of jobs that are debounced, you can use `max` option:
+
+```ruby
+class TestWorkerWithMax
+  include Sidekiq::Worker
+
+  sidekiq_options(
+    debounce: {
+      by: -> (args) { args[0] },
+      time: 5 * 60,
+      max: 3
+    }
+  )
+
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+```
+
+Calling such job 4 times will result in 2 jobs being executed. Keep it mind that after 3rd call job will trigger job execution almost immediately.
+
+### `max_time` - maximum time to debounce jobs
+You can provide `max_time` option to limit the time that jobs will be debounced. If "current time" + `time` is greater than `max_time` + "creation time of first job" job won't be debounced.
+So if you set it to 10 minutes, you can be sure that job will be executed in 10 minutes at most.
+
+```ruby
+class TestWorkerWithMax
+  include Sidekiq::Worker
+
+  sidekiq_options(
+    debounce: {
+      by: -> (args) { args[0] },
+      time: 5 * 60,
+      max_time: 10 * 60
+    }
+  )
+
+  def perform(group)
+    group.each do
+      # do some work with group
+    end
+  end
+end
+```
+
 ## Testing
 
 In order to test the behavior of `sidekiq-debouncer` it is necessary to disable testing mode. It is the limitation of internal implementation.

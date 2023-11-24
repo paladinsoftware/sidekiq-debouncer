@@ -182,7 +182,6 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         group = schedule_set.first
-
         expect(group.args).to eq([["A", "job 1"]])
         expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
         expect(queue.size).to eq(0)
@@ -238,6 +237,44 @@ describe Sidekiq::Debouncer::Middleware::Client do
 
       expect(schedule_set.size).to eq(0)
       expect(queue.first["debounce_key"]).to be_nil
+    end
+  end
+
+  context "with max time set" do
+    it "debounces jobs until max time is reached" do
+      TestWorkerWithMaxTime.perform_async("A", "job 1")
+      Timecop.freeze(time_start + 2 * 60)
+      TestWorkerWithMaxTime.perform_async("A", "job 2")
+      Timecop.freeze(time_start + 6 * 60)
+      TestWorkerWithMaxTime.perform_async("A", "job 3")
+      Timecop.freeze(time_start + 9 * 60)
+      TestWorkerWithMaxTime.perform_async("A", "job 4")
+
+      expect(schedule_set.size).to eq(2)
+      jobs = schedule_set.to_a
+      expect(jobs[0].args).to eq([["A", "job 3"], ["A", "job 4"]])
+      expect(jobs[1].args).to eq([["A", "job 1"], ["A", "job 2"]])
+    end
+  end
+
+  context "with max set" do
+    it "debounces jobs until max is reached, executes job immediately after reaching max" do
+      TestWorkerWithMax.perform_async("A", "job 1")
+      TestWorkerWithMax.perform_async("A", "job 2")
+      TestWorkerWithMax.perform_async("A", "job 3")
+      TestWorkerWithMax.perform_async("A", "job 4")
+
+      expect(schedule_set.size).to eq(2)
+      jobs = schedule_set.to_a.map(&:args)
+      expect(jobs).to match_array([
+        [["A", "job 4"]],
+        [["A", "job 1"], ["A", "job 2"], ["A", "job 3"]]
+      ])
+
+      puller.enqueue
+
+      queue_job = queue.first
+      expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"], ["A", "job 3"]])
     end
   end
 end
