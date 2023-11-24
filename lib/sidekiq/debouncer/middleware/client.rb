@@ -37,7 +37,7 @@ module Sidekiq
 
           options = debounce_options(klass)
           key = debounce_key(klass, job, options)
-          time = (options[:time].to_f + Time.now.to_f).to_s
+          time = options[:time].to_f + Time.now.to_f
 
           job["debounce_key"] = key
           job["args"] = [job["args"]]
@@ -46,7 +46,11 @@ module Sidekiq
           return job if testing?
 
           redis do |connection|
-            redis_debounce(connection, keys: ["schedule", key], argv: [Sidekiq.dump_json(job), time, @debounce_key_ttl])
+            redis_debounce(
+              connection,
+              keys: ["schedule", key],
+              argv: [Sidekiq.dump_json(job), time, @debounce_key_ttl, options[:max_time] || "", options[:max] || ""]
+            )
           end
 
           # prevent normal sidekiq flow
