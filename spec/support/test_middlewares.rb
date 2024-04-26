@@ -2,14 +2,14 @@
 
 class TestMiddleware
   def call(_worker_class, job, _queue, _redis_pool)
-    job["test_1"] = true
+    job["args"][1] = "job 34" if job["args"][1] == "job 33"
     yield
   end
 end
 
 class SecondTestMiddleware
   def call(_worker_class, job, _queue, _redis_pool)
-    job["test_2"] = true
+    job["args"][0] = "ABC" if job["args"][0] == "AB"
     yield
   end
 end

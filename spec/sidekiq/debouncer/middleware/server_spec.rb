@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require_relative "../../support/context"
-require_relative "../../support/test_workers"
-require_relative "../../support/test_middlewares"
+require_relative "../../../support/context"
+require_relative "../../../support/test_workers"
+require_relative "../../../support/test_middlewares"
 
-describe Sidekiq::Debouncer::Middleware::Client do
+describe Sidekiq::Debouncer::Middleware::Server do
   include_context "sidekiq"
 
   context "job with debounce" do
@@ -13,7 +13,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
       TestWorker.perform_async("A", "job 1")
       TestWorker.perform_async("A", "job 2")
 
-      expect(Sidekiq.redis { |con| con.call("GET", "debounce/TestWorker/A") }).not_to be_nil
+      expect(Sidekiq.redis { |con| con.call("XLEN", "debounce/TestWorker/A") }).not_to be_nil
 
       Timecop.freeze(time_start + 10 * 60)
       puller.enqueue

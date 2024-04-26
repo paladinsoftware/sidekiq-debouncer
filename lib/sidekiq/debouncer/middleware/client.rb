@@ -11,10 +11,11 @@ module Sidekiq
       # job from schedule set when another debounce occurs.
       class Client
         include Sidekiq::ClientMiddleware
+        extend Sidekiq::Debouncer::LuaCommands
 
         LUA_DEBOUNCE = File.read(File.expand_path("../../lua/debounce.lua", __FILE__))
-        LUA_DEBOUNCE_SHA = Digest::SHA1.hexdigest(LUA_DEBOUNCE)
-        REDIS_ERROR_CLASS = defined?(RedisClient::CommandError) ? RedisClient::CommandError : Redis::CommandError
+
+        define_lua_command(:redis_debounce, LUA_DEBOUNCE)
 
         def initialize(options = {})
           @debounce_key_ttl = options.fetch(:ttl, 60 * 60 * 24) # 24 hours by default
@@ -37,16 +38,12 @@ module Sidekiq
 
           options = debounce_options(klass)
           key = debounce_key(klass, job, options)
-          time = (options[:time].to_f + Time.now.to_f).to_s
+          time = (options[:time].to_i + Time.now.to_i).to_s
 
-          job["debounce_key"] = key
-          job["args"] = [job["args"]]
-          job.delete("debounce")
-
-          return job if testing?
+          return job.merge("args" => [[job["args"]]]) if testing?
 
           redis do |connection|
-            redis_debounce(connection, keys: ["schedule", key], argv: [Sidekiq.dump_json(job), time, @debounce_key_ttl])
+            redis_debounce(connection, keys: [Sidekiq::Debouncer::Enq::SET, key], argv: [Sidekiq.dump_json(job["args"]), time, @debounce_key_ttl])
           end
 
           # prevent normal sidekiq flow
@@ -66,20 +63,6 @@ module Sidekiq
           raise MissingArgumentError, "'time' attribute not provided" unless options[:time]
 
           options
-        end
-
-        def redis_debounce(connection, keys:, argv:)
-          retryable = true
-          begin
-            connection.call("EVALSHA", LUA_DEBOUNCE_SHA, keys.size, *keys, *argv)
-          rescue REDIS_ERROR_CLASS => e
-            raise if !e.message.start_with?("NOSCRIPT") || !retryable
-
-            # upload script to redis cache and retry
-            connection.call("SCRIPT", "LOAD", LUA_DEBOUNCE)
-            retryable = false
-            retry
-          end
         end
 
         def testing?
