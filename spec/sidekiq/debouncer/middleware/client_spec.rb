@@ -30,7 +30,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         TestWorker.perform_async("A", "job 1")
 
         Sidekiq.redis do |connection|
-          expect(connection.call("XRANGE", "debounce/TestWorker/A", "-", "+")).to eq([["1451646300-0", ["args", '["A","job 1"]']]])
+          expect(connection.call("XRANGE", "debounce/TestWorker/A", "-", "+")).to eq([["1451649900-0", ["args", '["A","job 1"]']]])
         end
       end
 
@@ -51,7 +51,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         Sidekiq.redis do |connection|
-          expect(connection.call("XRANGE", "debounce/TestWorker/ABC", "-", "+")).to eq([["1451646300-0", ["args", '["ABC","job 34"]']]])
+          expect(connection.call("XRANGE", "debounce/TestWorker/ABC", "-", "+")).to eq([["1451649900-0", ["args", '["ABC","job 34"]']]])
         end
       end
     end

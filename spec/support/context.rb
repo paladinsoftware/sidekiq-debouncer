@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 shared_context "sidekiq" do
-  let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0) }
+  let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0, 0) }
   let(:sidekiq_config) do
     sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
     if sidekiq_version >= Gem::Version.new("7.0")
