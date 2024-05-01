@@ -26,11 +26,11 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(queue.size).to eq(0)
       end
 
-      it "saves job in stream" do
+      it "saves job in set" do
         TestWorker.perform_async("A", "job 1")
 
         Sidekiq.redis do |connection|
-          expect(connection.call("XRANGE", "debounce/TestWorker/A", "-", "+")).to eq([["1451649900-0", ["args", '["A","job 1"]']]])
+          expect(connection.call("ZRANGE", "debounce/TestWorker/A", "-inf", "+inf", "BYSCORE")).to match([end_with('["A","job 1"]')])
         end
       end
 
@@ -51,7 +51,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         Sidekiq.redis do |connection|
-          expect(connection.call("XRANGE", "debounce/TestWorker/ABC", "-", "+")).to eq([["1451649900-0", ["args", '["ABC","job 34"]']]])
+          expect(connection.call("ZRANGE", "debounce/TestWorker/ABC", "-inf", "+inf", "BYSCORE")).to match([end_with('["ABC","job 34"]')])
         end
       end
     end
@@ -197,8 +197,8 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(set_item.value).to eq("debounce/TestWorker/A")
 
         Sidekiq.redis do |connection|
-          args = connection.call("XRANGE", "debounce/TestWorker/A", "-", "+")
-          expect(args.map { Sidekiq.load_json(_1[1][1])[1] }).to match_array((1..1000).to_a)
+          args = connection.call("ZRANGE", "debounce/TestWorker/A", "-inf", "+inf", "BYSCORE")
+          expect(args.map { Sidekiq.load_json(_1.split("-", 2)[1])[1] }).to match_array((1..1000).to_a)
         end
 
         expect(queue.size).to eq(0)

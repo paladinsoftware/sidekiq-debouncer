@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "digest/sha1"
+
 module Sidekiq
   module Debouncer
     module LuaCommands

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "digest/sha1"
+require "securerandom"
 
 module Sidekiq
   module Debouncer
@@ -38,12 +38,14 @@ module Sidekiq
 
           options = debounce_options(klass)
           key = debounce_key(klass, job, options)
-          time = (options[:time].to_i + Time.now.to_i).to_s
+          time = (options[:time].to_f + Time.now.to_f).to_s
 
           return job.merge("args" => [[job["args"]]]) if testing?
 
+          args_stringified = "#{SecureRandom.hex(12)}-#{Sidekiq.dump_json(job["args"])}"
+
           redis do |connection|
-            redis_debounce(connection, keys: [Sidekiq::Debouncer::Enq::SET, key], argv: [Sidekiq.dump_json(job["args"]), time, @debounce_key_ttl])
+            redis_debounce(connection, keys: [Sidekiq::Debouncer::Enq::SET, key], argv: [args_stringified, time, @debounce_key_ttl])
           end
 
           # prevent normal sidekiq flow

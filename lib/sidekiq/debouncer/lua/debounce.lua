@@ -6,5 +6,5 @@ local time = ARGV[2]
 local ttl = ARGV[3]
 
 redis.call("ZADD", set, time, debounce_key)
-redis.call("XADD", debounce_key, time .. "-*", "args", args)
+redis.call("ZADD", debounce_key, time, args)
 redis.call("EXPIRE", debounce_key, ttl)

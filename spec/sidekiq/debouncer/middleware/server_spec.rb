@@ -13,12 +13,12 @@ describe Sidekiq::Debouncer::Middleware::Server do
       TestWorker.perform_async("A", "job 1")
       TestWorker.perform_async("A", "job 2")
 
-      expect(Sidekiq.redis { |con| con.call("XLEN", "debounce/TestWorker/A") }).not_to be_nil
+      expect(Sidekiq.redis { |con| con.call("ZCARD", "debounce/TestWorker/A") }).not_to be_nil
 
       Timecop.freeze(time_start + 10 * 60)
       puller.enqueue
 
-      expect_any_instance_of(TestWorker).to receive(:perform).with([["A", "job 1"], ["A", "job 2"]]).and_call_original
+      expect_any_instance_of(TestWorker).to receive(:perform).with(match_array([["A", "job 1"], ["A", "job 2"]])).and_call_original
       processor.process_one
     end
   end
