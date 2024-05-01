@@ -31,7 +31,7 @@ describe Sidekiq::Debouncer::Enq do
       expect(schedule_set.size).to eq(1)
 
       set_item = schedule_set.first
-      expect(set_item.value).to eq("debounce/TestWorker/A")
+      expect(set_item.value).to eq("debounce/v3/TestWorker/A")
       expect(set_item.score).to eq((time_start + 14 * 60).to_i)
     end
   end
@@ -51,7 +51,7 @@ describe Sidekiq::Debouncer::Enq do
       processor.process_one
 
       set_item = schedule_set.first
-      expect(set_item.value).to eq("debounce/TestWorker/A")
+      expect(set_item.value).to eq("debounce/v3/TestWorker/A")
       expect(set_item.score).to eq((time_start + 11 * 60).to_i)
 
       Timecop.freeze(time_start + 12 * 60)
@@ -69,7 +69,7 @@ describe Sidekiq::Debouncer::Enq do
       expect(schedule_set.size).to eq(1)
 
       set_item = schedule_set.first
-      expect(set_item.value).to eq("debounce/TestWorker/A")
+      expect(set_item.value).to eq("debounce/v3/TestWorker/A")
 
       expect(puller.instance_variable_get(:@enq)).to receive(:zpopbyscore_withscore).twice.and_wrap_original do |original_method, *args|
         original_method.call(*args).tap { TestWorker.perform_async("A", 2) }

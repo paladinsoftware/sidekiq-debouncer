@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "sidekiq/scheduled"
+
 module Sidekiq
   module Debouncer
     class Poller < ::Sidekiq::Scheduled::Poller

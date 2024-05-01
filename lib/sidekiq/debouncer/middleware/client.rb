@@ -45,7 +45,7 @@ module Sidekiq
           args_stringified = "#{SecureRandom.hex(12)}-#{Sidekiq.dump_json(job["args"])}"
 
           redis do |connection|
-            redis_debounce(connection, [Sidekiq::Debouncer::Enq::SET, key], [args_stringified, time, @debounce_key_ttl])
+            redis_debounce(connection, [Sidekiq::Debouncer::SET, key], [args_stringified, time, @debounce_key_ttl])
           end
 
           # prevent normal sidekiq flow
@@ -55,7 +55,7 @@ module Sidekiq
         def debounce_key(klass, job, options)
           method = options[:by]
           result = method.is_a?(Symbol) ? klass.send(method, job["args"]) : method.call(job["args"])
-          "debounce/#{klass.name}/#{result}"
+          "debounce/v3/#{klass.name}/#{result}"
         end
 
         def debounce_options(klass)

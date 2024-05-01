@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require "sidekiq/scheduled"
+
 module Sidekiq
   module Debouncer
     class Enq < ::Sidekiq::Scheduled::Enq
       extend LuaCommands
 
-      SET = "debouncer"
       LUA_ZPOPBYSCORE_WITHSCORE = File.read(File.expand_path("../lua/zpopbyscore_withscore.lua", __FILE__))
       LUA_ZPOPBYSCORE_MULTI = File.read(File.expand_path("../lua/zpopbyscore_multi.lua", __FILE__))
 
@@ -27,16 +28,16 @@ module Sidekiq
 
       def enqueue_jobs
         @redis.call do |conn|
-          while !@done && (job, score = zpopbyscore_withscore(conn, [SET], [Time.now.to_f.to_s]))
+          while !@done && (job, score = zpopbyscore_withscore(conn, [Sidekiq::Debouncer::SET], [Time.now.to_f.to_s]))
             job_args = zpopbyscore_multi(conn, [job], [score])
 
             final_args = job_args.map { |elem| Sidekiq.load_json(elem.split("-", 2)[1]) }
-            job_class = job.split("/")[1]
+            job_class = job.split("/")[2]
             klass = Object.const_get(job_class)
 
             @client.push({"args" => final_args, "class" => klass, "debounce_key" => job})
 
-            @logger.debug { "enqueued #{SET}: #{job}" }
+            @logger.debug { "enqueued #{Sidekiq::Debouncer::SET}: #{job}" }
           end
         end
       end

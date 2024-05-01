@@ -13,7 +13,7 @@ describe Sidekiq::Debouncer::Middleware::Server do
       TestWorker.perform_async("A", "job 1")
       TestWorker.perform_async("A", "job 2")
 
-      expect(Sidekiq.redis { |con| con.call("ZCARD", "debounce/TestWorker/A") }).not_to be_nil
+      expect(Sidekiq.redis { |con| con.call("ZCARD", "debounce/v3/TestWorker/A") }).not_to be_nil
 
       Timecop.freeze(time_start + 10 * 60)
       puller.enqueue

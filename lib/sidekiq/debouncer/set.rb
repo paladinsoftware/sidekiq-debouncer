@@ -4,7 +4,7 @@ module Sidekiq
   module Debouncer
     class Set < Sidekiq::JobSet
       def initialize
-        super Sidekiq::Debouncer::Enq::SET
+        super Sidekiq::Debouncer::SET
       end
     end
   end

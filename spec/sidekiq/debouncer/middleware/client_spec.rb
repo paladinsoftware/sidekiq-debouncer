@@ -16,7 +16,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
         expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
 
@@ -30,7 +30,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         TestWorker.perform_async("A", "job 1")
 
         Sidekiq.redis do |connection|
-          expect(connection.call("ZRANGE", "debounce/TestWorker/A", "-inf", "+inf", "BYSCORE")).to match([end_with('["A","job 1"]')])
+          expect(connection.call("ZRANGE", "debounce/v3/TestWorker/A", "-inf", "+inf", "BYSCORE")).to match([end_with('["A","job 1"]')])
         end
       end
 
@@ -41,7 +41,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorkerWithSymbolAsDebounce/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithSymbolAsDebounce/A")
         expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
 
@@ -51,7 +51,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         Sidekiq.redis do |connection|
-          expect(connection.call("ZRANGE", "debounce/TestWorker/ABC", "-inf", "+inf", "BYSCORE")).to match([end_with('["ABC","job 34"]')])
+          expect(connection.call("ZRANGE", "debounce/v3/TestWorker/ABC", "-inf", "+inf", "BYSCORE")).to match([end_with('["ABC","job 34"]')])
         end
       end
     end
@@ -66,7 +66,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorkerWithMultipleArguments/6")
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithMultipleArguments/6")
         expect(set_item.score).to eq((time_start + 8 * 60).to_i)
 
         expect(queue.size).to eq(0)
@@ -81,7 +81,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
         expect(set_item.score).to eq((time_start + 8 * 60).to_i)
 
         expect(queue.size).to eq(0)
@@ -96,7 +96,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorkerWithSymbolAsDebounce/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithSymbolAsDebounce/A")
         expect(set_item.score).to eq((time_start + 8 * 60).to_i)
 
         expect(queue.size).to eq(0)
@@ -128,7 +128,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
         expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
     end
@@ -142,10 +142,10 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(schedule_set.size).to eq(1)
 
         set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
 
         Sidekiq.redis do |connection|
-          args = connection.call("ZRANGE", "debounce/TestWorker/A", "-inf", "+inf", "BYSCORE")
+          args = connection.call("ZRANGE", "debounce/v3/TestWorker/A", "-inf", "+inf", "BYSCORE")
           expect(args.map { Sidekiq.load_json(_1.split("-", 2)[1])[1] }).to match_array((1..1000).to_a)
         end
 
