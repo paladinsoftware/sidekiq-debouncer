@@ -18,7 +18,7 @@ shared_context "sidekiq" do
   let(:processor) do
     sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
     if sidekiq_version >= Gem::Version.new("7.0")
-      ::Sidekiq::Processor.new(Sidekiq.default_configuration.default_capsule) { |*args| }
+      ::Sidekiq::Processor.new(sidekiq_config.default_capsule) { |*args| }
     else
       ::Sidekiq::Processor.new(sidekiq_config) { |*args| }
     end

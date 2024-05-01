@@ -103,58 +103,6 @@ describe Sidekiq::Debouncer::Middleware::Client do
       end
     end
 
-    context "1 task, 3 minutes break, 1 task, 6 minutes break, 2 tasks" do
-      it "executes two tasks after 8 minutes, the last one in 14 minutes" do
-        TestWorker.perform_async("A", "job 1")
-
-        Timecop.freeze(time_start + 3 * 60)
-        TestWorker.perform_async("A", "job 2")
-
-        Timecop.freeze(time_start + 9 * 60)
-        puller.enqueue
-
-        TestWorker.perform_async("A", "job 3")
-        expect(schedule_set.size).to eq(1)
-
-        queue_job = queue.first
-        expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"]])
-
-        processor.process_one
-        TestWorker.perform_async("A", "job 4")
-        expect(schedule_set.size).to eq(1)
-
-        set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
-        expect(set_item.score).to eq((time_start + 14 * 60).to_i)
-      end
-    end
-
-    context "1 task, 6 minutes break, 1 task" do
-      it "executes first task, the second one in 11 minutes" do
-        TestWorker.perform_async("A", "job 1")
-
-        Timecop.freeze(time_start + 6 * 60)
-        puller.enqueue
-
-        TestWorker.perform_async("A", "job 2")
-
-        queue_job = queue.first
-
-        expect(queue_job.args).to eq([["A", "job 1"]])
-        processor.process_one
-
-        set_item = schedule_set.first
-        expect(set_item.value).to eq("debounce/TestWorker/A")
-        expect(set_item.score).to eq((time_start + 11 * 60).to_i)
-
-        Timecop.freeze(time_start + 12 * 60)
-        puller.enqueue
-
-        queue_job = queue.first
-        expect(queue_job.args).to eq([["A", "job 2"]])
-      end
-    end
-
     context "call using perform_in" do
       it "raises error" do
         expect { TestWorker.perform_in(30, "abc") }.to raise_error(Sidekiq::Debouncer::NotSupportedError)

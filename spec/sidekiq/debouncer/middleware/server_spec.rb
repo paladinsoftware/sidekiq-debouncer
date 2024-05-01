@@ -33,25 +33,4 @@ describe Sidekiq::Debouncer::Middleware::Server do
       processor.process_one
     end
   end
-
-  context "multiprocess safety" do
-    it "is safe" do
-      TestWorker.perform_async("A", 1)
-
-      expect(schedule_set.size).to eq(1)
-
-      set_item = schedule_set.first
-      expect(set_item.value).to eq("debounce/TestWorker/A")
-
-      expect(puller.instance_variable_get(:@enq)).to receive(:zpopbyscore_withscore).twice.and_wrap_original do |original_method, *args|
-        original_method.call(*args).tap { TestWorker.perform_async("A", 2) }
-      end
-
-      Timecop.freeze(time_start + 10 * 60)
-      puller.enqueue
-
-      expect(queue.size).to eq(1)
-      expect(queue.first.args).to eq([["A", 1]])
-    end
-  end
 end

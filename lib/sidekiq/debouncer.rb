@@ -6,6 +6,7 @@ require "sidekiq/debouncer/lua_commands"
 require "sidekiq/debouncer/enq"
 require "sidekiq/debouncer/set"
 require "sidekiq/debouncer/poller"
+require "sidekiq/debouncer/launcher"
 require "sidekiq/debouncer/middleware/client"
 require "sidekiq/debouncer/middleware/server"
 
