@@ -203,8 +203,6 @@ describe Sidekiq::Debouncer::Middleware::Client do
 
         expect(queue.size).to eq(0)
       end
-
-      # TODO: add a spec to check if enquing new job while pulling is going to work correctly
     end
 
     context "sidekiq testing fake mode" do

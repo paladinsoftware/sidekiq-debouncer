@@ -5,7 +5,7 @@ module Sidekiq
     class Enq < ::Sidekiq::Scheduled::Enq
       extend LuaCommands
 
-      SET = 'debouncer'
+      SET = "debouncer"
       LUA_ZPOPBYSCORE_WITHSCORE = File.read(File.expand_path("../lua/zpopbyscore_withscore.lua", __FILE__))
       LUA_ZPOPBYSCORE_MULTI = File.read(File.expand_path("../lua/zpopbyscore_multi.lua", __FILE__))
 
@@ -17,9 +17,11 @@ module Sidekiq
           super()
           @client = Sidekiq::Client
           @redis = Sidekiq.method(:redis)
+          @logger = Sidekiq.logger
         else
           super(config)
           @redis = config.method(:redis)
+          @logger = config.logger
         end
       end
 
@@ -34,7 +36,7 @@ module Sidekiq
 
             @client.push({"args" => final_args, "class" => klass, "debounce_key" => job})
 
-            logger.debug { "enqueued #{SET}: #{job}" }
+            @logger.debug { "enqueued #{SET}: #{job}" }
           end
         end
       end
