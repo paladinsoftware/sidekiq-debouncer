@@ -25,7 +25,7 @@ describe "zpopbyscore_withscore" do
 
   it "pops element from sorted set and returns it with score" do
     result = Sidekiq.redis do |connection|
-      fake_class.new.zpopbyscore_withscore(connection, keys: ["sample_set"], argv: ["11111112"])
+      fake_class.new.zpopbyscore_withscore(connection, ["sample_set"], ["11111112"])
     end
     expect(result).to eq(["key1", "11111111"])
 

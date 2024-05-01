@@ -9,7 +9,7 @@ module Sidekiq
 
       def define_lua_command(command, script)
         sha = Digest::SHA1.hexdigest(script)
-        define_method(command) do |conn, keys: nil, argv: nil|
+        define_method(command) do |conn, keys, argv|
           retryable = true
           begin
             conn.call("EVALSHA", sha, keys.size, *keys, *argv)

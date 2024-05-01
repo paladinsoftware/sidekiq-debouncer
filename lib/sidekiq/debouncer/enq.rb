@@ -27,8 +27,8 @@ module Sidekiq
 
       def enqueue_jobs
         @redis.call do |conn|
-          while !@done && (job, score = zpopbyscore_withscore(conn, keys: [SET], argv: [Time.now.to_f.to_s]))
-            job_args = zpopbyscore_multi(conn, keys: [job], argv: [score])
+          while !@done && (job, score = zpopbyscore_withscore(conn, [SET], [Time.now.to_f.to_s]))
+            job_args = zpopbyscore_multi(conn, [job], [score])
 
             final_args = job_args.map { |elem| Sidekiq.load_json(elem.split("-", 2)[1]) }
             job_class = job.split("/")[1]
