@@ -1,4 +1,5 @@
 ## Unreleased
+- complete rewrite of the library, details: https://github.com/paladinsoftware/sidekiq-debouncer/pull/25
 
 ## [2.0.2] - 2023-03-13
 - support Sidekiq::Testing
