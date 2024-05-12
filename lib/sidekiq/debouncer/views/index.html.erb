@@ -1,9 +1,11 @@
-<div class="header-container">
-  <h1><%= t('Debounces') %></h1>
-  <% if @debounces.size > 0 && @total_size > @count %>
+<header class='row'>
+  <div class='col-sm-5 pull-left'>
+    <h3><%= t('Debounces') %></h3>
+  </div>
+  <div class='col-sm-7 pull-right'>
     <%= erb :_paging, locals: { url: "#{root_path}debounces" } %>
-  <% end %>
-</div>
+  </div>
+</header>
 
 <% if @debounces.size > 0 %>
   <form action="<%= root_path %>debounces" method="post">
