@@ -34,4 +34,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "simplecov", "~> 0.22.0"
   gem.add_development_dependency "parallel", "~> 1.22.1"
   gem.add_development_dependency "standard", "~> 1.24.3"
+  gem.add_development_dependency "rack-test", "~> 2.1.0"
 end

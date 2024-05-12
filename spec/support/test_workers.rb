@@ -5,6 +5,7 @@ class TestWorker
   include Sidekiq::Debouncer
 
   sidekiq_options(
+    queue: "sample_queue",
     debounce: {
       time: 5 * 60,
       by: ->(job_args) {

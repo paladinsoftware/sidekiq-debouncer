@@ -6,6 +6,11 @@ module Sidekiq
       def initialize
         super Sidekiq::Debouncer::SET
       end
+
+      def fetch_by_key(key)
+        score = Sidekiq.redis { |conn| conn.zscore(Sidekiq::Debouncer::SET, key) }
+        Job.new(key, score)
+      end
     end
   end
 end

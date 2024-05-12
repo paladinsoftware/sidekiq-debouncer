@@ -5,6 +5,8 @@ require "sidekiq/debouncer/errors"
 require "sidekiq/debouncer/lua_commands"
 require "sidekiq/debouncer/middleware/client"
 require "sidekiq/debouncer/middleware/server"
+require "sidekiq/debouncer/job"
+require "sidekiq/debouncer/set"
 
 module Sidekiq
   module Debouncer
@@ -25,7 +27,6 @@ end
 
 Sidekiq.configure_server do
   require "sidekiq/debouncer/enq"
-  require "sidekiq/debouncer/set"
   require "sidekiq/debouncer/poller"
   require "sidekiq/debouncer/launcher"
 end
