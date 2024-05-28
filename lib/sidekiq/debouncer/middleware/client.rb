@@ -40,7 +40,7 @@ module Sidekiq
           key = debounce_key(klass, job, options)
           time = (options[:time].to_f + Time.now.to_f).to_s
 
-          return job.merge("args" => [[job["args"]]]) if testing?
+          return job.merge("args" => [job["args"]], "debounce_key" => key) if testing?
 
           args_stringified = "#{SecureRandom.hex(12)}-#{Sidekiq.dump_json(job["args"])}"
 
