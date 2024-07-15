@@ -34,6 +34,19 @@ describe Sidekiq::Debouncer::Middleware::Client do
         end
       end
 
+      it "allows overriding debounce options via Sidekiq's .set API" do
+        TestWorker
+          .set(debounce: {by: ->(jargs) { jargs[0] }, time: 10 * 60})
+          .perform_async("A", "job 1")
+
+        expect(schedule_set.size).to eq(1)
+        expect(queue.size).to eq(0)
+
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
+        expect(set_item.score).to eq((time_start + 10 * 60).to_i)
+      end
+
       it "executes it after 5 minutes for symbol debounce" do
         expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).with(["A", "job 1"]).once.and_call_original
         TestWorkerWithSymbolAsDebounce.perform_async("A", "job 1")
@@ -115,9 +128,13 @@ describe Sidekiq::Debouncer::Middleware::Client do
       end
     end
 
-    context "invalid attributes" do
-      it "raises error" do
+    context "invalid options" do
+      it "raises an error when sidekiq_options is missing an option" do
         expect { InvalidWorker.perform_async("abc") }.to raise_error(Sidekiq::Debouncer::MissingArgumentError)
+      end
+
+      it "raises an error when Sidekiq's .set API doesn't pass ALL sidekiq_options" do
+        expect { TestWorker.set(debounce: {time: 5 * 60}).perform_async("abc") }.to raise_error(Sidekiq::Debouncer::MissingArgumentError)
       end
     end
 

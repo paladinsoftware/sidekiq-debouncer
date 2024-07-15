@@ -36,7 +36,7 @@ module Sidekiq
         def debounce(klass, job)
           raise NotSupportedError, "perform_at is not supported with debounce" if job.key?("at")
 
-          options = debounce_options(klass)
+          options = debounce_options(klass, job)
           key = debounce_key(klass, job, options)
           time = (options[:time].to_f + Time.now.to_f).to_s
 
@@ -58,8 +58,9 @@ module Sidekiq
           "debounce/v3/#{klass.name}/#{result}"
         end
 
-        def debounce_options(klass)
-          options = klass.get_sidekiq_options["debounce"].transform_keys(&:to_sym)
+        def debounce_options(klass, job)
+          options = job.fetch("debounce") { klass.get_sidekiq_options["debounce"] }
+          options = options.transform_keys(&:to_sym)
 
           raise MissingArgumentError, "'by' attribute not provided" unless options[:by]
           raise MissingArgumentError, "'time' attribute not provided" unless options[:time]
