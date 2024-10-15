@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   DESCRIPTION
   gem.homepage = "https://github.com/paladinsoftware/sidekiq-debouncer"
   gem.license = "MIT"
-  gem.required_ruby_version = ">= 2.7.0"
+  gem.required_ruby_version = ">= 3.0.0"
 
   gem.files = Dir.glob("lib/**/*") + [
     "CHANGELOG.md",
@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
     "sidekiq-debouncer.gemspec"
   ]
 
-  gem.add_dependency "sidekiq", ">= 6.5", "< 8.0"
+  gem.add_dependency "sidekiq", ">= 7.0", "< 8.0"
 
   gem.add_development_dependency "rspec", "~> 3.12.0"
   gem.add_development_dependency "timecop", "~> 0.9.6"

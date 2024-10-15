@@ -20,12 +20,7 @@ SimpleCov.start do
   add_filter "/spec/"
 end
 
-sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
-if sidekiq_version >= Gem::Version.new("7.0")
-  Sidekiq.default_configuration.logger.level = Logger::UNKNOWN
-else
-  Sidekiq.logger.level = Logger::UNKNOWN
-end
+Sidekiq.default_configuration.logger.level = Logger::UNKNOWN
 
 Sidekiq::Testing.disable!
 Sidekiq::Testing.server_middleware do |chain|

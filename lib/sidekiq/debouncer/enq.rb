@@ -13,21 +13,8 @@ module Sidekiq
       define_lua_command(:zpopbyscore_withscore, LUA_ZPOPBYSCORE_WITHSCORE)
       define_lua_command(:zpopbyscore_multi, LUA_ZPOPBYSCORE_MULTI)
 
-      def initialize(config)
-        if Gem::Version.new(Sidekiq::VERSION) < Gem::Version.new("7.0.0")
-          super()
-          @client = Sidekiq::Client
-          @redis = Sidekiq.method(:redis)
-          @logger = Sidekiq.logger
-        else
-          super(config)
-          @redis = config.method(:redis)
-          @logger = config.logger
-        end
-      end
-
       def enqueue_jobs
-        @redis.call do |conn|
+        redis do |conn|
           while !@done && (job, score = zpopbyscore_withscore(conn, [Sidekiq::Debouncer::SET], [Time.now.to_f.to_s]))
             job_args = zpopbyscore_multi(conn, [job], [score])
 
@@ -37,7 +24,7 @@ module Sidekiq
 
             @client.push({"args" => final_args, "class" => klass, "debounce_key" => job})
 
-            @logger.debug { "enqueued #{Sidekiq::Debouncer::SET}: #{job}" }
+            logger.debug { "enqueued #{Sidekiq::Debouncer::SET}: #{job}" }
           end
         end
       end
