@@ -99,6 +99,9 @@ Sidekiq.configure_client do |config|
 end
 ```
 
+## Web UI
+Add `require 'sidekiq/debouncer/web'` after `require 'sidekiq/web'`.
+
 ## Testing
 
 In order to test the behavior of `sidekiq-debouncer` it is necessary to disable testing mode. It is the limitation of internal implementation.

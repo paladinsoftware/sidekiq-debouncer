@@ -23,7 +23,7 @@ describe Sidekiq::Debouncer::Enq do
       TestWorker.perform_async("A", "job 3")
       expect(schedule_set.size).to eq(1)
 
-      queue_job = queue.first
+      queue_job = sample_queue.first
       expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"]])
 
       processor.process_one
@@ -45,7 +45,7 @@ describe Sidekiq::Debouncer::Enq do
 
       TestWorker.perform_async("A", "job 2")
 
-      queue_job = queue.first
+      queue_job = sample_queue.first
 
       expect(queue_job.args).to eq([["A", "job 1"]])
       processor.process_one
@@ -57,7 +57,7 @@ describe Sidekiq::Debouncer::Enq do
       Timecop.freeze(time_start + 12 * 60)
       puller.enqueue
 
-      queue_job = queue.first
+      queue_job = sample_queue.first
       expect(queue_job.args).to eq([["A", "job 2"]])
     end
   end
@@ -78,8 +78,8 @@ describe Sidekiq::Debouncer::Enq do
       Timecop.freeze(time_start + 10 * 60)
       puller.enqueue
 
-      expect(queue.size).to eq(1)
-      expect(queue.first.args).to eq([["A", 1]])
+      expect(sample_queue.size).to eq(1)
+      expect(sample_queue.first.args).to eq([["A", 1]])
     end
   end
 end

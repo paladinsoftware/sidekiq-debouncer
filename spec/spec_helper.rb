@@ -11,12 +11,14 @@ require "sidekiq/scheduled"
 require "sidekiq/processor"
 require "sidekiq/api"
 require "sidekiq/testing"
+require "rack/test"
+require "sidekiq/web"
+require "sidekiq-debouncer"
+require "sidekiq/debouncer/web"
 
 SimpleCov.start do
   add_filter "/spec/"
 end
-
-require "sidekiq-debouncer"
 
 sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
 if sidekiq_version >= Gem::Version.new("7.0")
