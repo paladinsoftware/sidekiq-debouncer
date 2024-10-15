@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require_relative "../../support/context"
-require_relative "../../support/test_workers"
-require_relative "../../support/test_middlewares"
+require_relative "../../../support/context"
+require_relative "../../../support/test_workers"
+require_relative "../../../support/test_middlewares"
 
-describe Sidekiq::Debouncer::Middleware::Client do
+describe Sidekiq::Debouncer::Middleware::Server do
   include_context "sidekiq"
 
   context "job with debounce" do
@@ -13,12 +13,12 @@ describe Sidekiq::Debouncer::Middleware::Client do
       TestWorker.perform_async("A", "job 1")
       TestWorker.perform_async("A", "job 2")
 
-      expect(Sidekiq.redis { |con| con.call("GET", "debounce/TestWorker/A") }).not_to be_nil
+      expect(Sidekiq.redis { |con| con.call("ZCARD", "debounce/v3/TestWorker/A") }).not_to be_nil
 
       Timecop.freeze(time_start + 10 * 60)
       puller.enqueue
 
-      expect_any_instance_of(TestWorker).to receive(:perform).with([["A", "job 1"], ["A", "job 2"]]).and_call_original
+      expect_any_instance_of(TestWorker).to receive(:perform).with(match_array([["A", "job 1"], ["A", "job 2"]])).and_call_original
       processor.process_one
     end
   end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require_relative "../../support/context"
-require_relative "../../support/test_workers"
-require_relative "../../support/test_middlewares"
+require_relative "../../../support/context"
+require_relative "../../../support/test_workers"
+require_relative "../../../support/test_middlewares"
 
 describe Sidekiq::Debouncer::Middleware::Client do
   include_context "sidekiq"
@@ -15,11 +15,9 @@ describe Sidekiq::Debouncer::Middleware::Client do
 
         expect(schedule_set.size).to eq(1)
 
-        group = schedule_set.first
-
-        expect(group.args).to eq([["A", "job 1"]])
-        expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
-        expect(queue.size).to eq(0)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
+        expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
 
       it "doesnt land in queue" do
@@ -28,44 +26,33 @@ describe Sidekiq::Debouncer::Middleware::Client do
         expect(queue.size).to eq(0)
       end
 
+      it "saves job in set" do
+        TestWorker.perform_async("A", "job 1")
+
+        Sidekiq.redis do |connection|
+          expect(connection.call("ZRANGE", "debounce/v3/TestWorker/A", "-inf", "+inf", "BYSCORE")).to match([end_with('["A","job 1"]')])
+        end
+      end
+
       it "executes it after 5 minutes for symbol debounce" do
         expect(TestWorkerWithSymbolAsDebounce).to receive(:debounce_method).with(["A", "job 1"]).once.and_call_original
         TestWorkerWithSymbolAsDebounce.perform_async("A", "job 1")
 
         expect(schedule_set.size).to eq(1)
 
-        group = schedule_set.first
-
-        expect(group.args).to eq([["A", "job 1"]])
-        expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
-        expect(queue.size).to eq(0)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithSymbolAsDebounce/A")
+        expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
 
       it "executes the rest of middleware stack" do
-        TestWorker.perform_async("A", "job 1")
+        TestWorker.perform_async("AB", "job 33")
 
         expect(schedule_set.size).to eq(1)
 
-        group = schedule_set.first
-
-        expect(group["test_1"]).to be_truthy
-        expect(group["test_2"]).to be_truthy
-      end
-
-      it "saves information about debounce_key" do
-        TestWorker.perform_async("A", "job 1")
-
-        expect(schedule_set.size).to eq(1)
-
-        group = schedule_set.first
-
-        expect(group["debounce_key"]).to eq("debounce/TestWorker/A")
-      end
-
-      it "saves debounce key" do
-        TestWorker.perform_async("A", "job 1")
-
-        expect(Sidekiq.redis { |con| con.call("GET", "debounce/TestWorker/A") }).not_to be_nil
+        Sidekiq.redis do |connection|
+          expect(connection.call("ZRANGE", "debounce/v3/TestWorker/ABC", "-inf", "+inf", "BYSCORE")).to match([end_with('["ABC","job 34"]')])
+        end
       end
     end
 
@@ -77,10 +64,11 @@ describe Sidekiq::Debouncer::Middleware::Client do
         TestWorkerWithMultipleArguments.perform_async(3, 3)
 
         expect(schedule_set.size).to eq(1)
-        group = schedule_set.first
 
-        expect(group.args).to eq([[1, 5], [3, 3]])
-        expect(group.at.to_i).to be((time_start + 8 * 60).to_i)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithMultipleArguments/6")
+        expect(set_item.score).to eq((time_start + 8 * 60).to_i)
+
         expect(queue.size).to eq(0)
       end
 
@@ -91,10 +79,11 @@ describe Sidekiq::Debouncer::Middleware::Client do
         TestWorker.perform_async("A", "job 2")
 
         expect(schedule_set.size).to eq(1)
-        group = schedule_set.first
 
-        expect(group.args).to eq([["A", "job 1"], ["A", "job 2"]])
-        expect(group.at.to_i).to be((time_start + 8 * 60).to_i)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
+        expect(set_item.score).to eq((time_start + 8 * 60).to_i)
+
         expect(queue.size).to eq(0)
       end
 
@@ -105,55 +94,12 @@ describe Sidekiq::Debouncer::Middleware::Client do
         TestWorkerWithSymbolAsDebounce.perform_async("A", "job 2")
 
         expect(schedule_set.size).to eq(1)
-        group = schedule_set.first
-        expect(group.args).to eq([["A", "job 1"], ["A", "job 2"]])
-        expect(group.at.to_i).to be((time_start + 8 * 60).to_i)
+
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorkerWithSymbolAsDebounce/A")
+        expect(set_item.score).to eq((time_start + 8 * 60).to_i)
+
         expect(queue.size).to eq(0)
-      end
-    end
-
-    context "1 task, 3 minutes break, 1 task, 6 minutes break, 2 tasks" do
-      it "executes two tasks after 8 minutes, the last one in 14 minutes" do
-        TestWorker.perform_async("A", "job 1")
-
-        Timecop.freeze(time_start + 3 * 60)
-        TestWorker.perform_async("A", "job 2")
-
-        Timecop.freeze(time_start + 9 * 60)
-        puller.enqueue
-
-        TestWorker.perform_async("A", "job 3")
-        expect(schedule_set.size).to eq(1)
-
-        queue_job = queue.first
-        expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"]])
-
-        processor.process_one
-        TestWorker.perform_async("A", "job 4")
-        expect(schedule_set.size).to eq(1)
-
-        scheduled = schedule_set.first
-        expect(scheduled.args).to eq([["A", "job 3"], ["A", "job 4"]])
-        expect(scheduled.at.to_i).to be((time_start + 14 * 60).to_i)
-      end
-    end
-
-    context "1 task, 6 minutes break, 1 task" do
-      it "executes first task, the second one in 11 minutes" do
-        TestWorker.perform_async("A", "job 1")
-
-        Timecop.freeze(time_start + 6 * 60)
-        puller.enqueue
-
-        TestWorker.perform_async("A", "job 2")
-
-        queue_job = queue.first
-        scheduled = schedule_set.first
-
-        expect(queue_job.args).to eq([["A", "job 1"]])
-
-        expect(scheduled.args).to eq([["A", "job 2"]])
-        expect(scheduled.at.to_i).to be((time_start + 11 * 60).to_i)
       end
     end
 
@@ -181,11 +127,9 @@ describe Sidekiq::Debouncer::Middleware::Client do
 
         expect(schedule_set.size).to eq(1)
 
-        group = schedule_set.first
-
-        expect(group.args).to eq([["A", "job 1"]])
-        expect(group.at.to_i).to eq((time_start + 5 * 60).to_i)
-        expect(queue.size).to eq(0)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
+        expect(set_item.score).to eq((time_start + 5 * 60).to_i)
       end
     end
 
@@ -197,9 +141,14 @@ describe Sidekiq::Debouncer::Middleware::Client do
 
         expect(schedule_set.size).to eq(1)
 
-        group = schedule_set.first
-        expect(group.args[0][0]).to eq("A")
-        expect(group.args.map(&:last)).to match_array((1..1000).to_a)
+        set_item = schedule_set.first
+        expect(set_item.value).to eq("debounce/v3/TestWorker/A")
+
+        Sidekiq.redis do |connection|
+          args = connection.call("ZRANGE", "debounce/v3/TestWorker/A", "-inf", "+inf", "BYSCORE")
+          expect(args.map { Sidekiq.load_json(_1.split("-", 2)[1])[1] }).to match_array((1..1000).to_a)
+        end
+
         expect(queue.size).to eq(0)
       end
     end

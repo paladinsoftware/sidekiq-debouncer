@@ -2,11 +2,14 @@
 
 require "sidekiq/debouncer/version"
 require "sidekiq/debouncer/errors"
+require "sidekiq/debouncer/lua_commands"
 require "sidekiq/debouncer/middleware/client"
 require "sidekiq/debouncer/middleware/server"
 
 module Sidekiq
   module Debouncer
+    SET = "debouncer"
+
     def self.included(base)
       base.extend ClassMethods
     end
@@ -18,4 +21,11 @@ module Sidekiq
       end
     end
   end
+end
+
+Sidekiq.configure_server do
+  require "sidekiq/debouncer/enq"
+  require "sidekiq/debouncer/set"
+  require "sidekiq/debouncer/poller"
+  require "sidekiq/debouncer/launcher"
 end

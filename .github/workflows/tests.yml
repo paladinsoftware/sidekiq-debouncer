@@ -7,15 +7,16 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis:
-        image: redis:6-alpine
+        image: redis:${{ matrix.redis }}
         ports:
           - 6379:6379
         options: --entrypoint redis-server
     strategy:
       fail-fast: false
       matrix:
-        sidekiq: [ "6.5.8", "7.0.6" ]
-        ruby: [ "2.7.7", "3.0.5", "3.1.3", "3.2.1" ]
+        sidekiq: [ "6.5.12", "7.2.3" ]
+        ruby: [ "2.7.7", "3.0.6", "3.1.4", "3.2.4", "3.3.1" ]
+        redis: [ "6.2-alpine", "7.2-alpine" ]
     env:
       RAILS_ENV: test
       SIDEKIQ_VERSION: ${{ matrix.sidekiq }}

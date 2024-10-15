@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 shared_context "sidekiq" do
-  let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0) }
+  let(:time_start) { Time.new(2016, 1, 1, 12, 0, 0, 0) }
   let(:sidekiq_config) do
     sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
     if sidekiq_version >= Gem::Version.new("7.0")
@@ -13,12 +13,12 @@ shared_context "sidekiq" do
     end
   end
   let(:queue) { Sidekiq::Queue.new("default") }
-  let(:puller) { ::Sidekiq::Scheduled::Poller.new(sidekiq_config) }
-  let(:schedule_set) { Sidekiq::ScheduledSet.new }
+  let(:puller) { ::Sidekiq::Debouncer::Poller.new(sidekiq_config) }
+  let(:schedule_set) { Sidekiq::Debouncer::Set.new }
   let(:processor) do
     sidekiq_version = Gem::Version.new(Sidekiq::VERSION)
     if sidekiq_version >= Gem::Version.new("7.0")
-      ::Sidekiq::Processor.new(Sidekiq.default_configuration.default_capsule) { |*args| }
+      ::Sidekiq::Processor.new(sidekiq_config.default_capsule) { |*args| }
     else
       ::Sidekiq::Processor.new(sidekiq_config) { |*args| }
     end
