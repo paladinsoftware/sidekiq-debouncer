@@ -1,5 +1,8 @@
-## Unreleased
-- complete rewrite of the library, details: https://github.com/paladinsoftware/sidekiq-debouncer/pull/25
+## [3.0.0] - 2024-10-22
+- Complete rewrite of the library ([#25](https://github.com/paladinsoftware/sidekiq-debouncer/pull/25))
+- Read only Web UI ([#26](https://github.com/paladinsoftware/sidekiq-debouncer/pull/26))
+- Drop support for sidekiq 6.x and ruby 2.7 ([#28](https://github.com/paladinsoftware/sidekiq-debouncer/pull/28))
+- Respect sidekiq_options overridden by .set ([#27](https://github.com/paladinsoftware/sidekiq-debouncer/pull/27))
 
 ## [2.0.2] - 2023-03-13
 - support Sidekiq::Testing
