@@ -139,7 +139,9 @@ describe Sidekiq::Debouncer::Middleware::Client do
     end
 
     context "debounce method" do
-      it "works like perform_async" do
+      it "warns the method is deprecated" do
+        allow(TestWorker).to receive(:warn)
+
         TestWorker.debounce("A", "job 1")
 
         expect(schedule_set.size).to eq(1)
@@ -147,6 +149,8 @@ describe Sidekiq::Debouncer::Middleware::Client do
         set_item = schedule_set.first
         expect(set_item.value).to eq("debounce/v3/TestWorker/A")
         expect(set_item.score).to eq((time_start + 5 * 60).to_i)
+
+        expect(TestWorker).to have_received(:warn).with(/debounce method is deprecated/)
       end
     end
 
@@ -173,7 +177,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
     context "sidekiq testing fake mode" do
       it "uses standard sidekiq flow" do
         Sidekiq::Testing.fake! do
-          TestWorker.debounce("A", "job 1")
+          TestWorker.perform_async("A", "job 1")
 
           expect(schedule_set.size).to eq(0)
           expect(TestWorker.jobs.size).to eq(1)
@@ -189,7 +193,7 @@ describe Sidekiq::Debouncer::Middleware::Client do
         Sidekiq::Testing.inline! do
           expect_any_instance_of(TestWorker).to receive(:perform).with([["A", "job 1"]])
 
-          TestWorker.debounce("A", "job 1")
+          TestWorker.perform_async("A", "job 1")
 
           expect(schedule_set.size).to eq(0)
           expect(TestWorker.jobs.size).to eq(0)
