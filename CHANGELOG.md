@@ -4,6 +4,9 @@
 - Drop support for sidekiq 6.x and ruby 2.7 ([#28](https://github.com/paladinsoftware/sidekiq-debouncer/pull/28))
 - Respect sidekiq_options overridden by .set ([#27](https://github.com/paladinsoftware/sidekiq-debouncer/pull/27))
 
+**Upgrade notes:**
+Since the job format changed, V3 won't debounce jobs enqueued with V2, although they'll still get executed
+
 ## [2.0.2] - 2023-03-13
 - support Sidekiq::Testing
 
