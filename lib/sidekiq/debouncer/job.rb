@@ -9,7 +9,7 @@ module Sidekiq
 
       def initialize(key, score)
         @key = key
-        @score = score
+        @score = Float(score)
       end
 
       def at
