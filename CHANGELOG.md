@@ -1,3 +1,6 @@
+## [3.1.0] - 2025-03-13
+- Support for Sidekiq 8 ([#31](https://github.com/paladinsoftware/sidekiq-debouncer/pull/31))
+
 ## [3.0.0] - 2024-10-22
 - Complete rewrite of the library ([#25](https://github.com/paladinsoftware/sidekiq-debouncer/pull/25))
 - Read only Web UI ([#26](https://github.com/paladinsoftware/sidekiq-debouncer/pull/26))
@@ -14,7 +17,7 @@ Since the job format changed, V3 won't debounce jobs enqueued with V2, although 
 - don't remove debounce key in redis to avoid invalid debouncing
 
 ## [2.0.0] - 2023-02-28
-Complete rewrite of the library:  
+Complete rewrite of the library:
 - Instead of iterating through whole schedule set, sidekiq-debouncer will now cache debounce key in redis with a reference to the job.
 Thanks to that there is a huge performance boost compared to V1. With 1k jobs in schedule set it's over 100x faster.
 The difference is even bigger with larger amount of jobs.
