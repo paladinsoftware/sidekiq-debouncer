@@ -13,6 +13,14 @@ module Sidekiq
             route_params[key]
           end
         end
+
+        def get_url_param(key)
+          if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new("8.0.0")
+            url_params(key)
+          else
+            params[key]
+          end
+        end
       end
 
       def self.registered(app)
@@ -29,8 +37,8 @@ module Sidekiq
         app.get "/debounces" do
           view_path = File.join(File.expand_path("..", __FILE__), "views")
 
-          @count = (params["count"] || 25).to_i
-          (@current_page, @total_size, @debounces) = page("debouncer", params["page"], @count)
+          @count = (get_url_param("count") || 25).to_i
+          (@current_page, @total_size, @debounces) = page("debouncer", get_url_param("page"), @count)
           @debounces = @debounces.map { |key, score| Sidekiq::Debouncer::Job.new(key, score) }
 
           render(:erb, File.read(File.join(view_path, "index.html.erb")))
