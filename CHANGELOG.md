@@ -1,5 +1,6 @@
-## [3.1.0] - 2025-03-13
+## [3.1.0] - 2025-03-28
 - Support for Sidekiq 8 ([#31](https://github.com/paladinsoftware/sidekiq-debouncer/pull/31))
+- DragonflyDB support ([#29](https://github.com/paladinsoftware/sidekiq-debouncer/pull/29))
 
 ## [3.0.0] - 2024-10-22
 - Complete rewrite of the library ([#25](https://github.com/paladinsoftware/sidekiq-debouncer/pull/25))
