@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
     "sidekiq-debouncer.gemspec"
   ]
 
-  gem.add_dependency "sidekiq", ">= 7.0", "< 8.0"
+  gem.add_dependency "sidekiq", ">= 7.0", "< 9.0"
 
   gem.add_development_dependency "rspec", "~> 3.12.0"
   gem.add_development_dependency "timecop", "~> 0.9.6"
