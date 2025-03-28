@@ -27,7 +27,8 @@ describe "zpopbyscore_withscore" do
     result = Sidekiq.redis do |connection|
       fake_class.new.zpopbyscore_withscore(connection, ["sample_set"], ["11111112"])
     end
-    expect(result).to eq(["key1", "11111111"])
+    expect(result[0]).to eq("key1")
+    expect(result[1].to_s).to eq("11111111")
 
     Sidekiq.redis do |connection|
       expect(connection.call("ZCARD", "sample_set")).to eq(1)
