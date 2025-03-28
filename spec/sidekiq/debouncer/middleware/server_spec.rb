@@ -19,7 +19,7 @@ describe Sidekiq::Debouncer::Middleware::Server do
       puller.enqueue
 
       expect_any_instance_of(TestWorker).to receive(:perform).with(match_array([["A", "job 1"], ["A", "job 2"]])).and_call_original
-      processor.process_one
+      processor.send(:process_one)
     end
   end
 
@@ -30,7 +30,7 @@ describe Sidekiq::Debouncer::Middleware::Server do
       puller.enqueue
       expect_any_instance_of(NormalWorker).to receive(:perform).with(1).and_call_original
 
-      processor.process_one
+      processor.send(:process_one)
     end
   end
 end
