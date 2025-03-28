@@ -26,7 +26,7 @@ describe Sidekiq::Debouncer::Enq do
       queue_job = sample_queue.first
       expect(queue_job.args).to eq([["A", "job 1"], ["A", "job 2"]])
 
-      processor.process_one
+      processor.send(:process_one)
       TestWorker.perform_async("A", "job 4")
       expect(schedule_set.size).to eq(1)
 
@@ -48,7 +48,7 @@ describe Sidekiq::Debouncer::Enq do
       queue_job = sample_queue.first
 
       expect(queue_job.args).to eq([["A", "job 1"]])
-      processor.process_one
+      processor.send(:process_one)
 
       set_item = schedule_set.first
       expect(set_item.value).to eq("debounce/v3/TestWorker/A")

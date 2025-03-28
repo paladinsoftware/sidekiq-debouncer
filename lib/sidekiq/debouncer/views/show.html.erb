@@ -1,38 +1,40 @@
-<div class="header-container">
-  <h3><%= t('Job') %></h3>
-</div>
+<section>
+  <header class="header-container">
+    <h3><%= t('Job') %></h3>
+  </header>
 
-<div class="table_container">
-  <table class="table table-bordered table-striped table-hover">
-    <tbody>
-      <tr>
-        <th><%= t('Queue') %></th>
-        <td><%= @job.queue %></td>
-      </tr>
-      <tr>
-        <th><%= t('When') %></th>
-        <td><%= relative_time(@job.at) %></td>
-      </tr>
-      <tr>
-        <th><%= t('DebounceKey') %></th>
-        <td>
-          <%= @job.key %>
-        </td>
-      </tr>
-      <tr>
-        <th><%= t('Job') %></th>
-        <td>
-          <%= @job.display_class %>
-        </td>
-      </tr>
-      <tr>
-        <th><%= t('Arguments') %></th>
-        <td>
-          <code class="code-wrap">
-            <div class="args-extended"><%= display_args(@job.args, nil) %></div>
-          </code>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <div class="table_container">
+    <table class="table table-bordered table-striped table-hover">
+      <tbody>
+        <tr>
+          <th><%= t('Queue') %></th>
+          <td><%= @job.queue %></td>
+        </tr>
+        <tr>
+          <th><%= t('When') %></th>
+          <td><%= relative_time(@job.at) %></td>
+        </tr>
+        <tr>
+          <th><%= t('DebounceKey') %></th>
+          <td>
+            <%= @job.key %>
+          </td>
+        </tr>
+        <tr>
+          <th><%= t('Job') %></th>
+          <td>
+            <%= @job.display_class %>
+          </td>
+        </tr>
+        <tr>
+          <th><%= t('Arguments') %></th>
+          <td>
+            <code class="code-wrap">
+              <div class="args-extended"><%= display_args(@job.args, nil) %></div>
+            </code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

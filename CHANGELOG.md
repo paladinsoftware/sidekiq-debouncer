@@ -1,5 +1,6 @@
 ## [3.1.0] - 2025-03-28
-- Support for Sidekiq 8 ([#31](https://github.com/paladinsoftware/sidekiq-debouncer/pull/31))
+- Drop support for Ruby < 3.2.0
+- Support for Sidekiq 8 ([#31](https://github.com/paladinsoftware/sidekiq-debouncer/pull/31), [#32](https://github.com/paladinsoftware/sidekiq-debouncer/pull/32))
 - DragonflyDB support ([#29](https://github.com/paladinsoftware/sidekiq-debouncer/pull/29))
 
 ## [3.0.0] - 2024-10-22

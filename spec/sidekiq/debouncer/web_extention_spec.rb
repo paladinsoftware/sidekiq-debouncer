@@ -9,7 +9,12 @@ describe "Web extension" do
 
   include_context "sidekiq"
 
-  let(:app) { Sidekiq::Web }
+  let(:app) do
+    Rack::Builder.new do
+      use Rack::Session::Pool
+      run Sidekiq::Web
+    end
+  end
   let(:job) { described_class.new("debounce/v3/TestWorker/1", 1715472000) }
 
   before do
