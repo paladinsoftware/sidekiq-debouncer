@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem "sidekiq", "= 7.2.4"
+gem "connection_pool", "<3"
+gem "logger"
+
+gemspec path: '../../'

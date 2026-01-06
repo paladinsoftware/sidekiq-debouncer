@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sidekiq: [ "7.2.4", "7.3.9", "8.0.1" ]
-        ruby: [ "3.2.7", "3.3.7", "3.4.2" ]
+        sidekiq: [ "7.2.x", "7.3.x", "8.0.x", "8.1.x" ]
+        ruby: [ "3.2.9", "3.3.10", "3.4.8", "4.0.0"]
         redis: [ "redis:7.2-alpine", "docker.dragonflydb.io/dragonflydb/dragonfly:latest" ]
     env:
       RAILS_ENV: test
