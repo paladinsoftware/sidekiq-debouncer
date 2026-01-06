@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "base64"
+require "sidekiq/api"
+require "sidekiq/debouncer/set"
 
 module Sidekiq
   module Debouncer

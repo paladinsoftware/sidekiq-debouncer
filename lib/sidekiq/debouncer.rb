@@ -6,7 +6,6 @@ require "sidekiq/debouncer/lua_commands"
 require "sidekiq/debouncer/middleware/client"
 require "sidekiq/debouncer/middleware/server"
 require "sidekiq/debouncer/job"
-require "sidekiq/debouncer/set"
 
 module Sidekiq
   module Debouncer
