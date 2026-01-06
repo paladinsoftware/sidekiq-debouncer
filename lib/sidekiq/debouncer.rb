@@ -3,6 +3,7 @@
 require "sidekiq/debouncer/version"
 require "sidekiq/debouncer/errors"
 require "sidekiq/debouncer/lua_commands"
+require "sidekiq/debouncer/job_builder"
 require "sidekiq/debouncer/middleware/client"
 require "sidekiq/debouncer/middleware/server"
 require "sidekiq/debouncer/job"

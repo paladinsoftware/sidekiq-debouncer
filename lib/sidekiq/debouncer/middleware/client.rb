@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "securerandom"
-
 module Sidekiq
   module Debouncer
     module Middleware
@@ -42,10 +40,10 @@ module Sidekiq
 
           return job.merge("args" => [job["args"]], "debounce_key" => key) if testing?
 
-          args_stringified = "#{SecureRandom.hex(12)}-#{Sidekiq.dump_json(job["args"])}"
+          job_stringified = Sidekiq.dump_json(job)
 
           redis do |connection|
-            redis_debounce(connection, [Sidekiq::Debouncer::SET, key], [args_stringified, time, @debounce_key_ttl])
+            redis_debounce(connection, [Sidekiq::Debouncer::SET, key], [job_stringified, time, @debounce_key_ttl])
           end
 
           # prevent normal sidekiq flow

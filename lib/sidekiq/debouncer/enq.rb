@@ -18,11 +18,7 @@ module Sidekiq
           while !@done && (job, score = zpopbyscore_withscore(conn, [Sidekiq::Debouncer::SET], [Time.now.to_f.to_s]))
             job_args = zpopbyscore_multi(conn, [job], [score])
 
-            final_args = job_args.map { |elem| Sidekiq.load_json(elem.split("-", 2)[1]) }
-            job_class = job.split("/")[2]
-            klass = Object.const_get(job_class)
-
-            @client.push({"args" => final_args, "class" => klass, "debounce_key" => job})
+            @client.push(JobBuilder.build(job_args, job))
 
             logger.debug { "enqueued #{Sidekiq::Debouncer::SET}: #{job}" }
           end

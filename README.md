@@ -99,6 +99,12 @@ Sidekiq.configure_client do |config|
 end
 ```
 
+## Middleware context
+
+When multiple jobs are debounced together, the full job hash from the **last job** is preserved. This means any context added by other middlewares (like `acts_as_tenant`, Sidekiq's `CurrentAttributes`, or custom middleware data) will be taken from the most recent job.
+
+For example, if you debounce 3 jobs with different tenant contexts, the final executed job will use the tenant from the 3rd (last) job.
+
 ## Web UI
 Add `require 'sidekiq/debouncer/web'` after `require 'sidekiq/web'`.
 
