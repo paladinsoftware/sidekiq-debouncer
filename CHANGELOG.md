@@ -1,3 +1,8 @@
+## [3.2.0] - 2026-02-15
+- Support extra attributes ([#37](https://github.com/paladinsoftware/sidekiq-debouncer/pull/37))
+- Fix loading order issues ([#36](https://github.com/paladinsoftware/sidekiq-debouncer/pull/36))
+- Bump Ruby and Sidekiq versions ([#35](https://github.com/paladinsoftware/sidekiq-debouncer/pull/35))
+
 ## [3.1.0] - 2025-03-28
 - Drop support for Ruby < 3.2.0
 - Support for Sidekiq 8 ([#31](https://github.com/paladinsoftware/sidekiq-debouncer/pull/31), [#32](https://github.com/paladinsoftware/sidekiq-debouncer/pull/32))
