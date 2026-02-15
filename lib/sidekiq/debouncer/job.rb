@@ -3,8 +3,6 @@
 module Sidekiq
   module Debouncer
     class Job
-      include Sidekiq::JobUtil
-
       attr_reader :key, :score
 
       def initialize(key, score)
@@ -17,12 +15,11 @@ module Sidekiq
       end
 
       def args
-        @_args ||= Sidekiq.redis { |conn| conn.call("ZRANGE", key, "-inf", "+inf", "BYSCORE") }
-          .map { |elem| Sidekiq.load_json(elem.split("-", 2)[1]) }
+        item["args"]
       end
 
       def queue
-        normalized["queue"]
+        item["queue"]
       end
 
       def klass
@@ -31,10 +28,11 @@ module Sidekiq
 
       alias_method :display_class, :klass
 
-      private
-
-      def normalized
-        @_normalized ||= normalize_item({"args" => args, "class" => Object.const_get(klass), "debounce_key" => key})
+      def item
+        @_item ||= begin
+          job_args = Sidekiq.redis { |conn| conn.call("ZRANGE", key, "-inf", "+inf", "BYSCORE") }
+          JobBuilder.build(job_args, key)
+        end
       end
     end
   end
